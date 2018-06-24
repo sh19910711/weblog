@@ -8,7 +8,6 @@ describe Note::Paragraph do
     end
 
     let(:p) { @paragraphs[1] }
-    let(:p_noresults) { @paragraphs[0] }
 
     context '.text' do
       subject { p.text }
@@ -16,15 +15,8 @@ describe Note::Paragraph do
     end
 
     context '.results' do
-      context 'with results' do
-        subject { p.results }
-        it { should include 'ec2-user' }
-      end
-
-      context 'with no results' do
-        subject { p_noresults.results }
-        it { should be_nil }
-      end
+      subject { p.results.first.data }
+      it { should include 'ec2-user' }
     end
 
     context '.date_started' do
@@ -44,7 +36,7 @@ describe Note::Paragraph do
 
     context '.editor_mode' do
       subject { p.editor_mode }
-      it { should eq p.content['editorMode'] }
+      it { should eq p.content['config']['editorMode'] }
     end
 
     context '.id' do

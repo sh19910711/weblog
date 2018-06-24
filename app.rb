@@ -22,7 +22,7 @@ class App < Sinatra::Base
   end
 
   get '/notes/test' do
-    @note = Note::Note.new('spec/fixtures/example_note.json')
+    @note = Note::Note.new('spec/fixtures/athena.json')
     @title = "#{@note.name} - #{@title}"
 
     slim :notes

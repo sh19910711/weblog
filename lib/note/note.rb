@@ -13,7 +13,7 @@ module Note
     end
 
     def paragraphs
-      content['paragraphs'].map {|p| Paragraph.new(p) }
+      content['paragraphs'].map {|p| Paragraph.new(p) }.select(&:finished?)
     end
   end
 end

@@ -12,7 +12,10 @@ module Note
 
     def results
       if res = content['results']
-        content['results']['msg'].map{|m|m['data']}.join('\n')
+        s = Struct.new(:type, :data)
+        content['results']['msg'].map{|m| s.new(m['type'], m['data'].gsub(/<div>$/, '</div>')) }
+      else
+        Array.new
       end
     end
 
@@ -28,8 +31,16 @@ module Note
       content['dateUpdated']
     end
 
+    def finished?
+      content['status'] == 'FINISHED'
+    end
+
+    def editor_hidden?
+      ['ace/mode/markdown'].include?(editor_mode)
+    end
+
     def editor_mode
-      content['editorMode']
+      content['config']['editorMode']
     end
 
     def id

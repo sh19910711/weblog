@@ -1,18 +1,22 @@
-div.row
+.row
   h2= '# ' + @note.name
 
-div.paragraphs
+.paragraphs
   - @note.paragraphs.each do |p|
-    div.paragraph
-      div.row
-        div.col-sm-12
-          pre.paragraph-text id="text-#{p.id}"
-            = p.text
-      - if p.results
-        div.row
-          div.col-sm-12
-            pre.paragraph-results id="results-#{p.id}"
-              = p.results
+    .paragraph
+      - unless p.editor_hidden?
+        .row
+          .col-sm-12
+            pre.paragraph-text id="text-#{p.id}" data-mode="#{p.editor_mode}"
+                = p.text
+      - p.results.each do |r|
+        .row
+          .col-sm-12
+            - if r.type === 'HTML'
+              == r.data
+            - else
+              pre.paragraph-results id="results-#{p.id}"
+                = r.data
       hr
 
 sass:
@@ -21,10 +25,9 @@ sass:
 
   .paragraph-results
     max-height: 200px
-    background: #eee
+    background: rgba(0,0,0,0.01)
     padding: 16px
-    border: 1px solid rgba(0,0,0, 0.03)
-    overflow-x: hidden
+    border: 1px solid rgba(0, 0, 0, 0.03)
 
 javascript:
   const elements = document.getElementsByClassName('paragraph-text');
@@ -33,5 +36,6 @@ javascript:
     setTimeout(() => {
       var editor = ace.edit(el.id);
       editor.setTheme("ace/theme/solarized_light");
+      if (el.dataset.mode) editor.getSession().setMode(el.dataset.mode);
     }, i*100)
   };
