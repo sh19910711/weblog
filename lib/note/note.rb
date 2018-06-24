@@ -15,7 +15,11 @@ module Note
 		)
 
     def content
-      @content ||= JSON.parse(s3_content)
+      @content ||= if %r{^s3://} === path
+        JSON.parse(s3_content)
+      else
+        JSON.parse(File.read(path))
+      end
     end
 
     def name
@@ -30,7 +34,7 @@ module Note
 
       def s3_content
         c = Aws::S3::Client.new
-        u = URI.parse(self.path)
+        u = URI.parse(path)
         res = c.get_object(bucket: u.host, key: u.path[1..-1]).body.read
       end
   end

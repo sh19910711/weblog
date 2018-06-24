@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Note::Note do
   context '.new(example)' do
     before do
-      @note = Note::Note.new(SPEC_ROOT + 'fixtures/example_note.json')
+      @note = Note::Note.new(path: SPEC_ROOT + 'fixtures/example_note.json')
     end
 
     context '.name' do

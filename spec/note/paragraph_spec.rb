@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Note::Paragraph do
   context '.new(content)' do
     before do
-      @note = Note::Note.new(SPEC_ROOT + 'fixtures/example_note.json')
+      @note = Note::Note.new(path: SPEC_ROOT + 'fixtures/example_note.json')
       @paragraphs = @note.paragraphs
     end
 
