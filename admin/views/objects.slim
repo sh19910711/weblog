@@ -1,0 +1,13 @@
+ul
+- @objects.each do |o|
+  li
+    = o
+    ul
+      - if n = @notes[o]
+        li
+          a href="notes/#{n.id}"
+            = n.name
+      - else
+        form action="objects" method="post"
+          input type="hidden" name="path" value="#{o}"
+          input type="submit"

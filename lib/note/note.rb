@@ -9,12 +9,13 @@ module Note
 
     table(
       :name => :notes,
-      :key => :key,
+      :id => :id,
       :read_capacity => 1,
       :write_capacity => 1,
     )
 
     field :path, :string
+    field :name, :string
 
     def content
       @content ||= if %r{^s3://} === path
@@ -24,8 +25,9 @@ module Note
       end
     end
 
-    def name
-      content['name']
+    def fetch
+      id = content['id']
+      self.name = content['name']
     end
 
     def paragraphs

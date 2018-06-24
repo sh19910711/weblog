@@ -9,17 +9,48 @@ module Admin
     configure do
       register Sinatra::Reloader
       Pathname.glob('../lib/**/*.rb').each {|rb| also_reload rb }
+
+      Note::Note.create_table
     end
 
     get '/objects' do
       s3 = Aws::S3::Resource.new
-      s3.bucket(ENV['S3_BUCKET']).objects(prefix: ENV['S3_PREFIX']).map(&:key)
+      keys = s3.bucket(ENV['S3_BUCKET']).objects(prefix: ENV['S3_PREFIX']).map(&:key)
+      @objects = keys.map {|k| "s3://#{ENV['S3_BUCKET']}/#{k}" }
+
+      @notes = if Note::Note.all.count > 0
+        Note::Note.all.reduce(Hash.new) {|o, n| o[n.path] = n; o }
+      else
+        []
+      end
+
+      slim :objects
+    end
+
+    post '/objects' do
+      q = Note::Note.where(path: params[:path])
+      m = if q.count > 0
+        q.first
+      else
+        Note::Note.new(path: params[:path])
+      end
+
+      m.fetch
+      m.save
+
+      'OK'
     end
 
     get '/notes' do
       @notes = Note::Note.all
 
       slim :notes
+    end
+
+    get '/notes/:id' do
+      @note = Note::Note.find(params[:id])
+
+      slim :note
     end
   end
 end
