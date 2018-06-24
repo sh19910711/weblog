@@ -2,18 +2,29 @@ require 'sinatra'
 require 'logger'
 require 'sinatra/reloader' if development?
 
-class App < Sinatra::Base
-  attr_reader :logger
+require_relative 'lib/note'
 
+$logger = Logger.new(STDOUT)
+
+class App < Sinatra::Base
   configure :development do
+    $logger.info('enable reloader')
     register Sinatra::Reloader
+    Pathname.glob('lib/**/*.rb').each {|rb| also_reload rb }
   end
 
   before do
-    @logger = Logger.new(STDOUT)
+    @title = 'NO TITLE'
   end
 
   get '/' do
     slim :index
+  end
+
+  get '/notes/test' do
+    note = Note.new('~/wrk/tmp/note.json')
+    @title = "#{note.name} - #{@title}"
+
+    slim :notes
   end
 end
