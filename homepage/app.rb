@@ -2,7 +2,7 @@ require 'sinatra'
 require 'logger'
 require 'sinatra/reloader' if development?
 
-require_relative 'lib/note'
+require_relative '../lib/note'
 
 $logger = Logger.new(STDOUT)
 
