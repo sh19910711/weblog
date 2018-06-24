@@ -6,25 +6,27 @@ require_relative '../lib/note'
 
 $logger = Logger.new(STDOUT)
 
-class App < Sinatra::Base
-  configure :development do
-    $logger.info('enable reloader')
-    register Sinatra::Reloader
-    Pathname.glob('lib/**/*.rb').each {|rb| also_reload rb }
-  end
+module HomePage
+  class App < Sinatra::Base
+    configure :development do
+      $logger.info('enable reloader')
+      register Sinatra::Reloader
+      Pathname.glob('../lib/**/*.rb').each {|rb| also_reload rb }
+    end
 
-  before do
-    @title = 'NO TITLE'
-  end
+    before do
+      @title = 'NO TITLE'
+    end
 
-  get '/' do
-    slim :index
-  end
+    get '/' do
+      slim :index
+    end
 
-  get '/notes/test' do
-    @note = Note::Note.new(path: 's3://cloud9-tmp/homepage/test.json')
-    @title = "#{@note.name} - #{@title}"
+    get '/notes/test' do
+      @note = Note::Note.new(path: 's3://cloud9-tmp/homepage/test.json')
+      @title = "#{@note.name} - #{@title}"
 
-    slim :notes
+      slim :notes
+    end
   end
 end

@@ -1,0 +1,20 @@
+h1 ノートを管理する
+table
+  thead
+    tr
+      th created_at
+      th updated_at
+      th path
+  tbody
+    - @notes.each do |n|
+      tr
+        td
+          = n.created_at
+        td
+          = n.updated_at
+        td
+          = n.path
+        td
+          a href="notes/#{n.path}"
+            | 編集
+            

@@ -5,14 +5,16 @@ require 'uri'
 
 module Note
   class Note
-		include Dynamoid::Document
+    include Dynamoid::Document
 
-		table(
-			:name => :notes,
-			:key => :path,
-			:read_capacity => 1,
-			:write_capacity => 1,
-		)
+    table(
+      :name => :notes,
+      :key => :key,
+      :read_capacity => 1,
+      :write_capacity => 1,
+    )
+
+    field :path, :string
 
     def content
       @content ||= if %r{^s3://} === path
