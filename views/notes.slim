@@ -1,11 +1,37 @@
 div.row
-  h2= @note.name
+  h2= '# ' + @note.name
 
 div.paragraphs
   - @note.paragraphs.each do |p|
     div.paragraph
       div.row
-        textarea= p.text
-      div.row
-        textarea= p.results
+        div.col-sm-12
+          pre.paragraph-text id="text-#{p.id}"
+            = p.text
+      - if p.results
+        div.row
+          div.col-sm-12
+            pre.paragraph-results id="results-#{p.id}"
+              = p.results
       hr
+
+sass:
+  .paragraph-text
+    height: 200px
+
+  .paragraph-results
+    max-height: 200px
+    background: #eee
+    padding: 16px
+    border: 1px solid rgba(0,0,0, 0.03)
+    overflow-x: hidden
+
+javascript:
+  const elements = document.getElementsByClassName('paragraph-text');
+  for (let i = 0; i < elements.length; ++i) {
+    const el = elements[i];
+    setTimeout(() => {
+      var editor = ace.edit(el.id);
+      editor.setTheme("ace/theme/solarized_light");
+    }, i*100)
+  };

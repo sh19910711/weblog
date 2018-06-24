@@ -46,5 +46,10 @@ describe Note::Paragraph do
       subject { p.editor_mode }
       it { should eq p.content['editorMode'] }
     end
+
+    context '.id' do
+      subject { p.id }
+      it { should eq p.content['id'] }
+    end
   end
 end

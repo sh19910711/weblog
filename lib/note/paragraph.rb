@@ -31,5 +31,9 @@ module Note
     def editor_mode
       content['editorMode']
     end
+
+    def id
+      content['id']
+    end
   end
 end
