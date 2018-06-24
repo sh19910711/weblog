@@ -1,3 +1,11 @@
-h2 this is note
+div.row
+  h2= @note.name
 
-- puts @note
+div.paragraphs
+  - @note.paragraphs.each do |p|
+    div.paragraph
+      div.row
+        textarea= p.text
+      div.row
+        textarea= p.results
+      hr
