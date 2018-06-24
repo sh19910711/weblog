@@ -11,6 +11,9 @@ gem "sinatra-contrib"
 gem "slim"
 gem "sass"
 
+gem "aws-sdk"
+gem "dynamoid"
+
 group :development do
   gem "byebug"
 end

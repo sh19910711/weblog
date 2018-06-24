@@ -31,14 +31,21 @@ html
         .title
           font-family: 'VT323', monospace
           font-size: 6rem
+          text-shadow: rgba(0,0,0,0.2) 6px 3px 3px
 
         .description
           font-style: italic
           color: #666
 
       #contents
+        &
+          box-shadow: rgba(0, 0, 0, 0.01) 0px 0px 16px 0px
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+          padding: 32px
+          border: 1px solid rgba(0, 0, 0, 0.03)
+          border-radius: 3px
         .subject
-          border-bottom: 3px solid rgba(0, 0, 0, 0.1)
+          box-shadow: rgba(0, 0, 0, 0.01) 0px 3px 3px 0px
           margin-bottom: 24px
           padding: 6px
           width: 100%
@@ -54,5 +61,5 @@ html
 
     .container
       .row
-        .col-sm-9#contents== yield
-        .col-sm-3#sidebar
+        .col-xl-9#contents== yield
+        .col-xl-3#sidebar
