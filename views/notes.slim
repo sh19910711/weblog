@@ -1,5 +1,5 @@
 .row
-  h2= '# ' + @note.name
+  h2.subject= @note.name
 
 .paragraphs
   - @note.paragraphs.each do |p|

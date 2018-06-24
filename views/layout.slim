@@ -20,16 +20,28 @@ html
     link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet"
 
     sass:
+      body
+        font-size: 1.2rem
+
       #header
         &
           margin-top: 128px
           margin-bottom: 32px
+
         .title
           font-family: 'VT323', monospace
           font-size: 6rem
+
         .description
           font-style: italic
           color: #666
+
+      #contents
+        .subject
+          border-bottom: 3px solid rgba(0, 0, 0, 0.1)
+          margin-bottom: 24px
+          padding: 6px
+          width: 100%
 
   body
     .container#header
@@ -42,5 +54,5 @@ html
 
     .container
       .row
-        .col-sm-9#content== yield
+        .col-sm-9#contents== yield
         .col-sm-3#sidebar
