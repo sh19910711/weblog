@@ -22,8 +22,8 @@ class App < Sinatra::Base
   end
 
   get '/notes/test' do
-    note = Note.new('~/wrk/tmp/note.json')
-    @title = "#{note.name} - #{@title}"
+    @note = Note::Note.new('spec/fixtures/example_note.json')
+    @title = "#{@note.name} - #{@title}"
 
     slim :notes
   end
