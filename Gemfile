@@ -10,6 +10,10 @@ gem "sinatra"
 gem "sinatra-contrib"
 gem "slim"
 
+group :development do
+  gem "byebug"
+end
+
 group :test do
   gem "rspec"
 end

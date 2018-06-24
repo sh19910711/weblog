@@ -10,5 +10,10 @@ describe Note::Note do
       subject { @note.name }
       it { should eq 'AWS/環境構築/Python' }
     end
+
+    context '.paragraphs' do
+      subject { @note.paragraphs.first }
+      it { should be_a Note::Paragraph }
+    end
   end
 end

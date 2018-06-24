@@ -11,5 +11,9 @@ module Note
     def name
       content['name']
     end
+
+    def paragraphs
+      content['paragraphs'].map {|p| Paragraph.new(p) }
+    end
   end
 end
