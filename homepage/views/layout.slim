@@ -31,7 +31,9 @@ html
         .title
           font-family: 'VT323', monospace
           font-size: 6rem
-          text-shadow: rgba(0,0,0,0.2) 6px 3px 3px
+          text-shadow: rgba(0,0,0,0.2) 6px 3px 1px
+          & a
+            color: #333
 
         .description
           font-style: italic
@@ -53,7 +55,8 @@ html
     .container#header
       .row
         h1.title
-          | --- NO TITLE 🏃
+          a href="/"
+            | --- NO TITLE 🏃
       .row
         p.description
           | ビッグデータでグロースハックしている。

@@ -60,5 +60,12 @@ module Admin
 
       slim :note
     end
+
+    post '/notes/:id/delete' do
+      @note = Note::Note.find(params[:id])
+      @note.delete
+
+      @note
+    end
   end
 end

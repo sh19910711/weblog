@@ -19,11 +19,14 @@ module HomePage
     end
 
     get '/' do
+      @notes = Note::Note.all if Note::Note.count
+
       slim :index
     end
 
-    get '/notes/test' do
-      @note = Note::Note.new(path: 's3://cloud9-tmp/homepage/test.json')
+    get '/notes/:id' do
+      @note = Note::Note.find(params[:id])
+      @note.fetch
       @title = "#{@note.name} - #{@title}"
 
       slim :notes_show
