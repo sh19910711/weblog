@@ -5,9 +5,14 @@ ul
     ul
       - if n = @notes[o]
         li
+          = n.created_at
+        li
           a href="notes/#{n.id}"
             = n.name
       - else
+        form action="objects/preview" method="post"
+          input type="hidden" name="path" value="#{o}"
+          input type="submit" value="Preview"
         form action="objects" method="post"
           input type="hidden" name="path" value="#{o}"
-          input type="submit"
+          input type="submit" value="Submit"

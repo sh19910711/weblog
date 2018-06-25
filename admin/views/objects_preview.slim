@@ -1,0 +1,11 @@
+ul
+  li
+    a href="../objects"
+      | back
+form action="objects" method="post"
+  input type="hidden" name="path" value="#{@note.path}"
+  input type="submit" value="Submit"
+pre
+  = @note.to_json
+div
+  = @note.content.to_json

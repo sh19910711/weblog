@@ -27,8 +27,16 @@ module Admin
       slim :objects
     end
 
+    post '/objects/preview' do
+      @note = Note::Note.new(path: params[:path])
+      @note.fetch
+
+      slim :objects_preview
+    end
+
     post '/objects' do
       q = Note::Note.where(path: params[:path])
+
       m = if q.count > 0
         q.first
       else
