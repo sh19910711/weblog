@@ -9,13 +9,18 @@ module Note
 
     table(
       :name => :notes,
-      :id => :id,
+      :key => :id,
       :read_capacity => 1,
       :write_capacity => 1,
     )
 
+    field :note_id, :string
     field :path, :string
     field :name, :string
+    global_secondary_index(
+      hash_key: :note_id,
+      range_key: :note_id,
+    )
 
     def content
       @content ||= if %r{^s3://} === path
@@ -26,7 +31,7 @@ module Note
     end
 
     def fetch
-      id = content['id']
+      self.note_id = content['id']
       self.name = content['name']
     end
 

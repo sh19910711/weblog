@@ -21,7 +21,7 @@ module Admin
       @notes = if Note::Note.all.count > 0
         Note::Note.all.reduce(Hash.new) {|o, n| o[n.path] = n; o }
       else
-        []
+        Hash.new
       end
 
       slim :objects
@@ -46,7 +46,7 @@ module Admin
       m.fetch
       m.save
 
-      'OK'
+      m.to_json
     end
 
     get '/notes' do

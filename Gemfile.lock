@@ -31,6 +31,7 @@ GEM
     minitest (5.11.3)
     multi_json (1.13.1)
     mustermann (1.0.2)
+    puma (3.11.4)
     rack (2.0.5)
     rack-protection (2.0.3)
       rack
@@ -84,6 +85,7 @@ DEPENDENCIES
   aws-sdk
   byebug
   dynamoid
+  puma
   rspec
   sass
   sinatra

@@ -12,3 +12,17 @@ stacks/development:
 		--template-file /tmp/packaged-cloudformation.yml \
 		--stack-name weblog-development \
 		--capabilities CAPABILITY_IAM
+
+development:
+	docker run \
+		-e S3_BUCKET=cloud9-tmp \
+		-e S3_PREFIX=homepage/ \
+		-v $(HOME)/.aws:/root/.aws \
+		-v $(PWD):/wrk \
+		-p 8080:8080 \
+		-ti \
+		sh19910711/homepage \
+		bundle exec rackup \
+			--host 0.0.0.0 \
+			--port 8080 \
+			./config.development.ru
