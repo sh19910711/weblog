@@ -1,0 +1,42 @@
+title 管理画面
+
+table
+  thead
+    tr
+      th created_at
+      th updated_at
+      th path
+      th action
+      th json
+  tbody
+    - @objects.each do |o|
+      - unless @notes[o]
+        tr
+          td None
+          td None
+          td
+            = o
+          td
+            form action="/admin/objects/preview" method="post"
+              input type="hidden" name="path" value="#{o}"
+              input type="submit" value="Preview"
+            form action="/admin/objects" method="post"
+              input type="hidden" name="path" value="#{o}"
+              input type="submit" value="Publish"
+          td None
+    - @objects.each do |o|
+      - if n = @notes[o]
+        tr
+          td
+            = n.created_at
+          td
+            = n.updated_at
+          td
+            = n.path
+          td
+            form action="/admin/notes/#{n.id}" method="get"
+              input type="submit" value="Edit"
+            form action="/admin/notes/#{n.id}/delete" method="post"
+              input type="submit" value="Delete"
+          td
+            = n.to_json

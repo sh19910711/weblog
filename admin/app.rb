@@ -6,6 +6,8 @@ require 'byebug'
 
 module Admin
   class App < Sinatra::Base
+    enable :prefixed_redirects
+
     configure do
       register Sinatra::Reloader
       Pathname.glob('../lib/**/*.rb').each {|rb| also_reload rb }
@@ -13,7 +15,7 @@ module Admin
       Note::Note.create_table
     end
 
-    get '/objects' do
+    get '/' do
       s3 = Aws::S3::Resource.new
       keys = s3.bucket(ENV['S3_BUCKET']).objects(prefix: ENV['S3_PREFIX']).map(&:key)
       @objects = keys.map {|k| "s3://#{ENV['S3_BUCKET']}/#{k}" }
@@ -24,7 +26,7 @@ module Admin
         Hash.new
       end
 
-      slim :objects
+      slim :admin
     end
 
     post '/objects/preview' do
@@ -46,13 +48,7 @@ module Admin
       m.fetch
       m.save
 
-      m.to_json
-    end
-
-    get '/notes' do
-      @notes = Note::Note.all
-
-      slim :notes
+      redirect '/'
     end
 
     get '/notes/:id' do
@@ -65,7 +61,7 @@ module Admin
       @note = Note::Note.find(params[:id])
       @note.delete
 
-      @note
+      redirect '/'
     end
   end
 end
