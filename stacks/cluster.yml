@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  Name:
+    Type: String
+    Default: homepage
+
+Resources:
+  VPC:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./vpc.yml
+      Parameters:
+        Name: !Ref Name
+
+  ECS:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./ecs.yml
+      Parameters:
+        Name: !Ref Name
