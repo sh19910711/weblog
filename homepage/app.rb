@@ -15,7 +15,7 @@ module HomePage
     end
 
     before do
-      @title = 'NO TITLE'
+      @title = 'NO TITLE 🏃'
     end
 
     get '/' do

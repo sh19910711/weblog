@@ -20,7 +20,14 @@ html
     link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet"
 
     sass:
+      html
+        overflow-y: scroll
+
       body
+        background: url('https://docs.google.com/drawings/d/e/2PACX-1vSuKwQXBPh_RbY2BuXD2zy14NmerXPCiatxk12JOJ6Ka4XUqrZy4es0QXP-kp0Z9Bl5iRCe6fF6_k_Z/pub?w=1440&h=1080') fixed
+        background-size: cover
+        background-repeat: no-repeat
+        background-position: center left
         font-size: 1.2rem
 
       #header
@@ -33,7 +40,7 @@ html
           font-size: 6rem
           text-shadow: rgba(0,0,0,0.2) 6px 3px 1px
           & a
-            color: #333
+            color: #fff
 
         .description
           font-style: italic
@@ -41,11 +48,14 @@ html
 
       #contents
         &
+          background: #fff
           box-shadow: rgba(0, 0, 0, 0.01) 0px 0px 16px 0px
+          box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.02)
           border-bottom: 1px solid rgba(0, 0, 0, 0.1)
           padding: 32px
-          border: 1px solid rgba(0, 0, 0, 0.03)
+          border: 1px solid rgba(0, 0, 0, 0.05)
         .subject
+          font-size: 42px
           box-shadow: rgba(0, 0, 0, 0.01) 0px 3px 3px 0px
           margin-bottom: 24px
           padding: 6px
@@ -57,9 +67,6 @@ html
         h1.title
           a href="/"
             | --- NO TITLE 🏃
-      .row
-        p.description
-          | ビッグデータでグロースハックしている。
 
     .container
       .row

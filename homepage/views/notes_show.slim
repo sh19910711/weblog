@@ -1,6 +1,7 @@
 .row
-  h2.subject
-    = @note.name
+  .col-sm-12
+    h2.subject
+      = @note.name
 
 .paragraphs
   - @note.paragraphs.each do |p|
