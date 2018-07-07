@@ -18,6 +18,8 @@ build:
 
 prod:
 	docker run \
+		-e AWS_REGION=us-east-1 \
+		-e RACK_ENV=production \
 		-e S3_BUCKET=cloud9-tmp \
 		-e S3_PREFIX=homepage/ \
 		-v $(HOME)/.aws:/root/.aws \
@@ -28,6 +30,7 @@ prod:
 
 dev:
 	docker run \
+		-e AWS_REGION=us-east-1 \
 		-e RACK_ENV=development \
 		-e S3_BUCKET=cloud9-tmp \
 		-e S3_PREFIX=homepage/ \
