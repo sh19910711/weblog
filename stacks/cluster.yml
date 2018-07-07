@@ -13,9 +13,27 @@ Resources:
       Parameters:
         Name: !Ref Name
 
+  IAM:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./iam.yml
+      Parameters:
+        Name: !Ref Name
+
+  SecurityGroup:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./securitygroup.yml
+      Parameters:
+        EnvironmentName: !Ref Name
+        VPC: !GetAtt VPC.Outputs.VpcId
+
   ECS:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: ./ecs.yml
       Parameters:
-        Name: !Ref Name
+        EnvironmentName: !Ref Name
+        VPC: !GetAtt VPC.Outputs.VpcId
+        Subnets: !GetAtt VPC.Outputs.Subnets
+        SecurityGroup: !GetAtt SecurityGroup.Outputs.ECSHostSecurityGroup

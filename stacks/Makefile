@@ -8,6 +8,7 @@ stack:
 		--output-template-file tmp/packaged-template.yml
 
 	aws cloudformation deploy \
+		--region us-east-1 \
 		--template-file tmp/packaged-template.yml \
 		--stack-name homepage \
-		--capabilities CAPABILITY_IAM
+		--capabilities CAPABILITY_NAMED_IAM
