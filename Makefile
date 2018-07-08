@@ -13,8 +13,9 @@ stacks/development:
 		--stack-name weblog-development \
 		--capabilities CAPABILITY_IAM
 
-build:
-	docker build -t sh19910711/homepage .
+image:
+	docker build -t sh19910711/homepage:0.0.2 .
+	docker push sh19910711/homepage:0.0.2
 
 prod:
 	docker run \

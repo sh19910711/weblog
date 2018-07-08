@@ -50,11 +50,9 @@ html
       #contents
         &
           background: #fff
-          box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.02)
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+          box-shadow: 0px 0px 18px rgba(255,204,0,0.1) inset
+          border: 1px solid rgba(255,204,0,0.5)
           padding: 32px
-          border: 1px solid rgba(0, 0, 0, 0.05)
-          margin-bottom: 32px
         .subject
           font-size: 42px
           box-shadow: rgba(0, 0, 0, 0.01) 0px 3px 3px 0px
@@ -62,27 +60,28 @@ html
           padding: 6px
           width: 100%
 
-     #footer
-       &
-         box-shadow: 0 0 3px 0px rgba(255,255,255,0.5) inset
-         padding: 64px
-         background: rgba(0, 0, 0, 0.7)
-         color: #fff
-         width: 100% !important
-         max-width: none
-       i
-         margin-right: 3px
-
-     // flex
-     html, body
-       height: 100%
-     body
-       display: flex
-       flex-direction: column
-     #header, #footer
-       flex: 0 0 auto
-     #main
-       flex: 1 0 auto
+      #footer
+        &
+          box-shadow: 0 0 3px 0px rgba(255,255,255,0.5) inset
+          padding: 64px
+          background: rgba(0, 0, 0, 0.7)
+          color: #fff
+          width: 100% !important
+          max-width: none
+        i
+          margin-right: 3px
+      
+      // layout
+      html, body
+        height: 100%
+      body
+        display: flex
+        flex-direction: column
+      #header, #footer
+        flex: 0 0 auto
+      #main
+        flex: 1 0 auto
+        margin-bottom: 96px
 
   body
     .container#header

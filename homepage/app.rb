@@ -31,5 +31,9 @@ module HomePage
 
       slim :notes_show
     end
+
+    get '/ping' do
+      'pong'
+    end
   end
 end
