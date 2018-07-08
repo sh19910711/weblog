@@ -41,7 +41,9 @@ Parameters:
 Resources:
     Service: 
         Type: AWS::ECS::Service
-        DependsOn: ListenerRule
+        DependsOn:
+          - ListenerRule
+          - TaskDefinition
         Properties: 
             Cluster: !Ref Cluster
             DesiredCount: 1
@@ -72,7 +74,8 @@ Resources:
                     - Name: S3_PREFIX
                       Value: homepage/
                   PortMappings:
-                    - ContainerPort: 8080
+                    - HostPort: 8080
+                      ContainerPort: 8080
                   LogConfiguration:
                     LogDriver: awslogs
                     Options:

@@ -27,7 +27,7 @@ prod:
 		-v $(PWD):/wrk \
 		-p 8080:8080 \
 		-ti \
-		sh19910711/homepage
+		sh19910711/homepage:0.0.2
 
 dev:
 	docker run \
@@ -39,7 +39,7 @@ dev:
 		-v $(PWD):/wrk \
 		-p 8080:8080 \
 		-ti \
-		sh19910711/homepage \
+		sh19910711/homepage:0.0.2 \
 		ash -c "bundle install -j4 --with development && bundle exec rackup \
 			--host 0.0.0.0 \
 			--port 8080 \

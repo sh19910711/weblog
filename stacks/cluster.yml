@@ -46,7 +46,7 @@ Resources:
         EnvironmentName: !Ref Name
         VPC: !GetAtt VPC.Outputs.VpcId
         Subnets: !GetAtt VPC.Outputs.Subnets
-        SecurityGroup: !GetAtt SecurityGroup.Outputs.ECSHostSecurityGroup
+        SecurityGroup: !GetAtt SecurityGroup.Outputs.LoadBalancerSecurityGroup
 
   Service:
     Type: AWS::CloudFormation::Stack
