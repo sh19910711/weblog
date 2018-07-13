@@ -10,7 +10,7 @@ Parameters:
     InstanceType:
         Description: Which instance type should we use to build the ECS cluster?
         Type: String
-        Default: t2.nano
+        Default: t2.medium
 
     ClusterSize:
         Description: How many ECS hosts do you want to initially deploy?
@@ -68,6 +68,8 @@ Resources:
         Properties:
             ImageId: ami-5253c32d # amzn-ami-2018.03.a-amazon-ecs-optimized
             InstanceType: !Ref InstanceType
+            KeyName: gateway
+            AssociatePublicIpAddress: true
             SecurityGroups:
                 - !Ref SecurityGroup
             IamInstanceProfile: !Ref ECSInstanceProfile
