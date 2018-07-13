@@ -92,7 +92,7 @@ Resources:
             ContainerDefinitions:
                 - Name: homepage
                   Essential: true
-                  Image: sh19910711/homepage:0.0.2
+                  Image: sh19910711/homepage:0.0.4
                   Memory: 512
                   Environment: 
                     - Name: S3_BUCKET
