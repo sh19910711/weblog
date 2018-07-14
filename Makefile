@@ -8,6 +8,8 @@ image:
 
 prod:
 	docker run \
+		--rm \
+		--name homepage \
 		-e AWS_REGION=us-east-1 \
 		-e RACK_ENV=production \
 		-e S3_BUCKET=cloud9-tmp \
@@ -19,7 +21,10 @@ prod:
 		sh19910711/homepage
 
 dev:
+	docker build -t sh19910711/homepage:development -f Dockerfile.dev .
 	docker run \
+		--rm \
+		--name homepage \
 		-e AWS_REGION=us-east-1 \
 		-e RACK_ENV=development \
 		-e S3_BUCKET=cloud9-tmp \
@@ -28,8 +33,4 @@ dev:
 		-v $(PWD):/wrk \
 		-p 8080:8080 \
 		-ti \
-		sh19910711/homepage \
-		ash -c "bundle install -j4 --with development && bundle exec rackup \
-			--host 0.0.0.0 \
-			--port 8080 \
-			./config.development.ru"
+		sh19910711/homepage:development
