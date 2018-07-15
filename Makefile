@@ -31,6 +31,6 @@ dev:
 		-e S3_PREFIX=homepage/ \
 		-v $(HOME)/.aws:/root/.aws \
 		-v $(PWD):/wrk \
-		-p 8080:8080 \
+		-p $(PORT):8080 \
 		-ti \
 		sh19910711/homepage:development
