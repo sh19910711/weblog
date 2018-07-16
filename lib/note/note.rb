@@ -28,9 +28,7 @@ module Note
     end
 
     def date
-      if p = paragraphs.first
-        Date.parse(p.content['dateCreated']).strftime('%Y/%m/%d')
-      end
+      created_at.strftime('%Y/%m/%d')
     end
 
     def summary

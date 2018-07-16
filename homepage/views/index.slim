@@ -2,4 +2,4 @@ ul.notes
   - @notes.each do |n|
     li.note
       a href="notes/#{n.id}"
-        = "#{n.created_at.strftime('%Y.%m.%d')} - #{n.name}"
+        = "#{n.date} - #{n.name}"

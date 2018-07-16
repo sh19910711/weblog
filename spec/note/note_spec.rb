@@ -4,6 +4,7 @@ describe Note::Note do
   context '.new(example)' do
     before do
       @note = Note::Note.new(path: SPEC_ROOT + 'fixtures/example_note.json')
+      allow(@note).to receive(:created_at).and_return(Date.parse('2018/06/23'))
       @note.fetch
     end
 
