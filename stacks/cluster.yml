@@ -60,3 +60,8 @@ Resources:
         Listener: !GetAtt LoadBalancer.Outputs.Listener
         Subnets: !GetAtt VPC.Outputs.Subnets
         SecurityGroup: !GetAtt SecurityGroup.Outputs.ECSHostSecurityGroup
+
+  CloudFront:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./cloudfront.yml
