@@ -3,8 +3,8 @@ usage:
 
 image:
 	docker build -t sh19910711/homepage .
-	docker build -t sh19910711/homepage:0.0.8 .
-	docker push sh19910711/homepage:0.0.8
+	docker build -t sh19910711/homepage:0.0.9 .
+	docker push sh19910711/homepage:0.0.9
 
 prod:
 	docker run \
