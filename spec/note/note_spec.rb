@@ -16,5 +16,10 @@ describe Note::Note do
       subject { @note.paragraphs.first }
       it { should be_a Note::Paragraph }
     end
+
+    context '.date' do
+      subject { @note.date }
+      it { should eq '2018/06/23' }
+    end
   end
 end

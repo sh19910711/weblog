@@ -34,3 +34,7 @@ dev:
 		-p $(PORT):8080 \
 		-ti \
 		sh19910711/homepage:development
+
+.PHONY: spec
+spec:
+	docker exec homepage bundle exec rspec

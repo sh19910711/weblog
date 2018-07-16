@@ -26,6 +26,12 @@ module Note
       name.gsub(/\//, ' / ')
     end
 
+    def date
+      if p = paragraphs.first
+        Date.parse(p.content['dateCreated']).strftime('%Y/%m/%d')
+      end
+    end
+
     def content
       @content ||= if %r{^s3://} === path
         JSON.parse(s3_content)

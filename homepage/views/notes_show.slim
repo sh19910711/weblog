@@ -2,6 +2,8 @@
   .col-sm-12
     h2.subject
       = @note.subject
+    .date
+      = "Posted at #{@note.date}"
 
 .paragraphs
   - @note.paragraphs.each do |p|
