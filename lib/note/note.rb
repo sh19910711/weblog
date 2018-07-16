@@ -17,6 +17,7 @@ module Note
     field :note_id, :string
     field :path, :string
     field :name, :string
+    field :image, :string
     global_secondary_index(
       hash_key: :note_id,
       range_key: :note_id,
@@ -29,6 +30,12 @@ module Note
     def date
       if p = paragraphs.first
         Date.parse(p.content['dateCreated']).strftime('%Y/%m/%d')
+      end
+    end
+
+    def summary
+      if p = paragraphs.first
+        p.text.gsub(/^%.*\s/, '')
       end
     end
 
