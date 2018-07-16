@@ -14,7 +14,7 @@
       - p.results.each do |r|
         .row
           .col-sm-12
-            - if r.type === 'HTML'
+            - if r.type === 'HTML' || r.type === 'ANGULAR'
               == r.data
             - else
               pre.paragraph-results id="results-#{p.id}"
@@ -35,12 +35,22 @@ sass:
     box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, 0.03)
 
 javascript:
-  const elements = document.getElementsByClassName('paragraph-text');
-  for (let i = 0; i < elements.length; ++i) {
-    const el = elements[i];
-    setTimeout(() => {
-      var editor = ace.edit(el.id);
-      editor.setTheme("ace/theme/solarized_light");
-      if (el.dataset.mode) editor.getSession().setMode(el.dataset.mode);
-    }, i*100)
-  };
+  (function() {
+    const elements = document.getElementsByClassName('paragraph-text');
+    for (let i = 0; i < elements.length; ++i) {
+      const el = elements[i];
+      setTimeout(() => {
+        var editor = ace.edit(el.id);
+        editor.setTheme("ace/theme/solarized_light");
+        if (el.dataset.mode) editor.getSession().setMode(el.dataset.mode);
+      }, i*100);
+    }
+  })();
+
+  (function() {
+    const elements = document.getElementsByTagName('iframe');
+    for (let i = 0; i < elements.length; ++i) {
+      const el = elements[i];
+      el.className += ' embed-responsive';
+    }
+  })();

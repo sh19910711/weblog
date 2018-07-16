@@ -11,7 +11,7 @@ module HomePage
     configure :development do
       $logger.info('enable reloader')
       register Sinatra::Reloader
-      Pathname.glob('../lib/**/*.rb').each {|rb| also_reload rb }
+      Pathname.glob('lib/**/*.rb').each {|rb| also_reload rb }
     end
 
     before do

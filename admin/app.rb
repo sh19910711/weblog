@@ -8,11 +8,17 @@ module Admin
   class App < Sinatra::Base
     enable :prefixed_redirects
 
-    configure do
+    configure :development do
+      $logger.info('enable reloader')
       register Sinatra::Reloader
-      Pathname.glob('../lib/**/*.rb').each {|rb| also_reload rb }
-
+      Pathname.glob('lib/**/*.rb').each {|rb| also_reload rb }
       Note::Note.create_table
+    end
+
+    helpers do
+      def path
+        params[:path].strip
+      end
     end
 
     get '/' do
@@ -30,19 +36,19 @@ module Admin
     end
 
     post '/objects/preview' do
-      @note = Note::Note.new(path: params[:path])
+      @note = Note::Note.new(path: path)
       @note.fetch
 
       slim :objects_preview
     end
 
     post '/objects' do
-      q = Note::Note.where(path: params[:path])
+      q = Note::Note.where(path: path)
 
       m = if q.count > 0
         q.first
       else
-        Note::Note.new(path: params[:path])
+        Note::Note.new(path: path)
       end
 
       m.fetch

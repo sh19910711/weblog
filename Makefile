@@ -3,8 +3,8 @@ usage:
 
 image:
 	docker build -t sh19910711/homepage .
-	docker build -t sh19910711/homepage:0.0.6 .
-	docker push sh19910711/homepage:0.0.6
+	docker build -t sh19910711/homepage:0.0.7 .
+	docker push sh19910711/homepage:0.0.7
 
 prod:
 	docker run \
@@ -12,8 +12,8 @@ prod:
 		--name homepage \
 		-e AWS_REGION=us-east-1 \
 		-e RACK_ENV=production \
-		-e S3_BUCKET=cloud9-tmp \
-		-e S3_PREFIX=homepage/ \
+		-e S3_BUCKET=hiroyuki.sano.ninja \
+		-e S3_PREFIX=zeppelin/ \
 		-v $(HOME)/.aws:/root/.aws \
 		-v $(PWD):/wrk \
 		-p 8080:8080 \
@@ -27,8 +27,8 @@ dev:
 		--name homepage \
 		-e AWS_REGION=us-east-1 \
 		-e RACK_ENV=development \
-		-e S3_BUCKET=cloud9-tmp \
-		-e S3_PREFIX=homepage/ \
+		-e S3_BUCKET=hiroyuki.sano.ninja \
+		-e S3_PREFIX=zeppelin/ \
 		-v $(HOME)/.aws:/root/.aws \
 		-v $(PWD):/wrk \
 		-p $(PORT):8080 \

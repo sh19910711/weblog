@@ -36,7 +36,7 @@ module Note
     end
 
     def editor_hidden?
-      ['ace/mode/markdown'].include?(editor_mode)
+      content['config']['editorHide']
     end
 
     def editor_mode
