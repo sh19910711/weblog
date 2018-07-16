@@ -6,6 +6,10 @@ module Note
       @content = content
     end
 
+    def title
+      content['title']
+    end
+
     def text
       content['text']
     end

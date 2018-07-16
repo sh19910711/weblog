@@ -27,7 +27,7 @@ module HomePage
     get '/notes/:id' do
       @note = Note::Note.find(params[:id])
       @note.fetch
-      @title = "#{@note.name} - #{@title}"
+      @title = "#{@note.subject} - #{@title}"
 
       slim :notes_show
     end

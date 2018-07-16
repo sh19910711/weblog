@@ -1,11 +1,13 @@
 .row
   .col-sm-12
     h2.subject
-      = @note.name
+      = @note.subject
 
 .paragraphs
   - @note.paragraphs.each do |p|
     .paragraph
+      .row
+        h3.paragraph-title.col-sm-12= p.title
       - unless p.editor_hidden?
         .row
           .col-sm-12
@@ -19,9 +21,11 @@
             - else
               pre.paragraph-results id="results-#{p.id}"
                 = r.data
-      hr
 
 sass:
+  .paragraph-title
+    margin: 1rem 0
+
   .paragraph-text
     height: 200px
     border: 1px solid rgba(0,0,0,0.05)

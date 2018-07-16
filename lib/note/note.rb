@@ -22,6 +22,10 @@ module Note
       range_key: :note_id,
     )
 
+    def subject
+      name.gsub(/\//, ' / ')
+    end
+
     def content
       @content ||= if %r{^s3://} === path
         JSON.parse(s3_content)
