@@ -63,5 +63,8 @@ Resources:
 
   CloudFront:
     Type: AWS::CloudFormation::Stack
+    DependsOn: LoadBalancer
     Properties:
       TemplateURL: ./cloudfront.yml
+      Parameters:
+        FrontURL: !GetAtt LoadBalancer.Outputs.LoadBalancerUrl

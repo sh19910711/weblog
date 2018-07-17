@@ -44,18 +44,6 @@ Resources:
                 - Type: forward
                   TargetGroupArn: !Ref DefaultTargetGroup
 
-    HttpsListener:
-      Type: AWS::ElasticLoadBalancingV2::Listener
-      Properties:
-        LoadBalancerArn: !Ref LoadBalancer
-        Port: 443
-        Protocol: HTTPS
-        Certificates:
-          - CertificateArn: 'arn:aws:acm:us-east-1:845933287843:certificate/38eb10ca-769f-4c44-97b5-d26e57e005a5'
-        DefaultActions:
-          - Type: forward
-            TargetGroupArn: !Ref DefaultTargetGroup
-
     DefaultTargetGroup:
       Type: AWS::ElasticLoadBalancingV2::TargetGroup
       Properties:
@@ -65,7 +53,6 @@ Resources:
         Protocol: HTTP
     
 Outputs:
-
     LoadBalancer:
         Description: A reference to the Application Load Balancer
         Value: !Ref LoadBalancer
@@ -76,4 +63,4 @@ Outputs:
 
     Listener:
         Description: A reference to a port 80 listener
-        Value: !Ref HttpsListener
+        Value: !Ref LoadBalancerListener
