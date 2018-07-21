@@ -77,10 +77,18 @@ Resources:
         PolicyDocument:
           Statement:
             - Effect: Allow
+              Resource: "arn:aws:s3:::hiroyuki.sano.ninja/zeppelin/notebook/*"
+              Action:
+                - "s3:GetObject"
+
+            - Effect: Allow
               Resource: "*"
               Action:
-                - "s3:*"
                 - "dynamodb:*"
+
+            - Effect: Allow
+              Resource: "*"
+              Action:
                 - "cloudwatch:*"
 
     TaskDefinition:
