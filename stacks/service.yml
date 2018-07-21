@@ -82,9 +82,12 @@ Resources:
                 - "s3:GetObject"
 
             - Effect: Allow
-              Resource: "*"
+              Resource: "arn:aws:dynamodb:us-east-1:845933287843:table/dynamoid_notes"
               Action:
-                - "dynamodb:*"
+                - "dynamodb:GetItem"
+                - "dynamodb:Scan"
+                - "dynamodb:Query"
+                - "dynamodb:DescribeTable"
 
             - Effect: Allow
               Resource: "*"
