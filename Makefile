@@ -38,3 +38,10 @@ dev:
 .PHONY: spec
 spec:
 	docker exec homepage bundle exec rspec
+
+.PHONY: admin
+admin:
+	docker exec -ti homepage w3m http://localhost:8080/admin
+
+console:
+	docker exec -ti homepage bundle exec irb -r ./lib/note
