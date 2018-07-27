@@ -18,10 +18,8 @@ module Note
     field :path, :string
     field :name, :string
     field :image, :string
-    global_secondary_index(
-      hash_key: :note_id,
-      range_key: :note_id,
-    )
+
+    has_many :tags, :class => ::Note::Tag
 
     def subject
       name.gsub(/\//, ' / ')
