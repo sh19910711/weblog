@@ -1,9 +1,19 @@
 title 管理画面
 h1 管理画面
 
+h2 公開済み
 ul
-  - @objects.each do |o|
+  - @notes.each do |path, note|
     li
       form method="post" action="/admin/preview"
-        input type="hidden" name="path" value="#{o}"
-        input type="submit" value="#{o}"
+        input type="hidden" name="path" value="#{path}"
+        input type="submit" value="#{note.name}"
+
+h2 ストック
+ul
+  - @objects.each do |o|
+    - unless @notes[o]
+      li
+        form method="post" action="/admin/preview"
+          input type="hidden" name="path" value="#{o}"
+          input type="submit" value="#{o}"
