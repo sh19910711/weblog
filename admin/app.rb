@@ -36,7 +36,14 @@ module Admin
     end
 
     post '/preview' do
-      @note = Note::Note.new(path: path)
+      q = Note::Note.where(path: path)
+
+      @note = if q.count > 0
+        q.first
+      else
+        Note::Note.new(path: path)
+      end
+
       @note.fetch
 
       slim :preview

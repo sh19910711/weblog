@@ -1,7 +1,9 @@
-ul
-  li
-    a href="/admin"
-      | back
+h1 プレビュー
+
+p
+  a href="/admin"
+    戻る
+
 form action="/admin/objects" method="post"
   input type="hidden" name="path" value="#{@note.path}"
   input type="submit" value="Submit"
