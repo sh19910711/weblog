@@ -35,11 +35,11 @@ module Admin
       slim :admin
     end
 
-    post '/objects/preview' do
+    post '/preview' do
       @note = Note::Note.new(path: path)
       @note.fetch
 
-      slim :objects_preview
+      slim :preview
     end
 
     post '/objects' do
