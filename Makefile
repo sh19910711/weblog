@@ -31,6 +31,7 @@ dev:
 		-e S3_PREFIX=zeppelin/ \
 		-v $(HOME)/.aws:/root/.aws \
 		-v $(PWD):/wrk \
+		-v $(HOME)/.w3m:/root/.w3m \
 		-p $(PORT):8080 \
 		-ti \
 		sh19910711/homepage:development
