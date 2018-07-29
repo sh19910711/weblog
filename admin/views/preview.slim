@@ -25,5 +25,6 @@ form action="/admin/save" method="post"
     input type="text" name="note.image" value="#{@note.image}"
   div
     span is_public:
-    input type="checkbox" name="note.is_public" value="true"
-  input type="submit" value="Save"
+    input type="text" name="note.is_public" value="#{@note.is_public}"
+  div
+    input type="submit" value="Save"

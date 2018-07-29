@@ -24,9 +24,7 @@ module Admin
       end
 
       def param_is_public
-        if v = params['note.is_public']
-          v.strip == "true"
-        end
+        params['note.is_public'].strip == "true"
       end
 
       def param_image
@@ -63,11 +61,16 @@ module Admin
     end
 
     post '/save' do
-      if note = Note::Note.find(param_id)
-        note.image = param_image
-        note.is_public = param_is_public
-        note.save
+      note = if param_id.empty?
+        Note::Note.new(path: param_path)
+      else
+        Note::Note.find(param_id)
       end
+
+      note.image = param_image
+      note.is_public = param_is_public
+      note.fetch
+      note.save
 
       redirect '/'
     end
