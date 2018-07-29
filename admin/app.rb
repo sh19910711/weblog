@@ -49,12 +49,12 @@ module Admin
     end
 
     post '/preview' do
-      q = Note::Note.where(path: path)
+      q = Note::Note.where(path: param_path)
 
       @note = if q.count > 0
         q.first
       else
-        Note::Note.new(path: path)
+        Note::Note.new(path: param_path)
       end
 
       @note.fetch

@@ -6,7 +6,7 @@ ul
   - @notes.each do |path, note|
     li
       form method="post" action="/admin/preview"
-        input type="hidden" name="path" value="#{path}"
+        input type="hidden" name="note.path" value="#{path}"
         input type="submit" value="#{note.name}"
 
 h2 ストック
@@ -15,5 +15,5 @@ ul
     - unless @notes[o]
       li
         form method="post" action="/admin/preview"
-          input type="hidden" name="path" value="#{o}"
+          input type="hidden" name="note.path" value="#{o}"
           input type="submit" value="#{o}"
