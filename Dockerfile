@@ -9,9 +9,9 @@ RUN apk update && \
 
 ENV RACK_ENV=production
 
-ADD homepage /wrk
-ADD lib /wrk
-ADD config.ru /wrk
+ADD ./homepage /wrk/homepage
+ADD ./lib /wrk/lib
+ADD ./config.ru /wrk
 
 EXPOSE 8080
 CMD bundle exec rackup --host 0.0.0.0 --port 8080

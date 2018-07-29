@@ -16,7 +16,6 @@ prod:
 		-e S3_BUCKET=hiroyuki.sano.ninja \
 		-e S3_PREFIX=zeppelin/ \
 		-v $(HOME)/.aws:/root/.aws \
-		-v $(PWD):/wrk \
 		-p 8080:8080 \
 		-ti \
 		sh19910711/homepage
