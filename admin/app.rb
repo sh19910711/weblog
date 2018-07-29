@@ -15,8 +15,22 @@ module Admin
     end
 
     helpers do
-      def path
-        params[:path].strip
+      def param_id
+        params['note.id'].strip
+      end
+
+      def param_path
+        params['note.path'].strip
+      end
+
+      def param_is_public
+        if v = params['note.is_public']
+          v.strip == "true"
+        end
+      end
+
+      def param_image
+        params['note.image'].strip
       end
     end
 
@@ -49,6 +63,12 @@ module Admin
     end
 
     post '/save' do
+      if note = Note::Note.find(param_id)
+        note.image = param_image
+        note.is_public = param_is_public
+        note.save
+      end
+
       redirect '/'
     end
 

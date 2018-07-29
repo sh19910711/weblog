@@ -35,7 +35,9 @@ module HomePage
     end
 
     get '/' do
-      @notes = Note::Note.all if Note::Note.count
+      q = Note::Note.where(is_public: true)
+
+      @notes = q.all if Note::Note.count > 0
 
       slim :index
     end
@@ -43,6 +45,7 @@ module HomePage
     get '/notes/:id' do
       @note = Note::Note.find(params[:id])
       @note.fetch
+
       @title = "#{@note.subject} - #{@title}"
 
       slim :notes_show

@@ -7,9 +7,23 @@ p
 pre
   = JSON.pretty_generate(JSON.parse(@note.to_json))
 
-textarea
-  = JSON.pretty_generate(@note.content)
+div
+  span preview:
+  textarea
+    = JSON.pretty_generate(@note.content)
+
+hr
+
+h2 編集
 
 form action="/admin/save" method="post"
-  input type="hidden" name="path" value="#{@note.path}"
+  div
+    input type="hidden" name="note.id" value="#{@note.id}"
+    input type="hidden" name="note.path" value="#{@note.path}"
+  div
+    span image:
+    input type="text" name="note.image" value="#{@note.image}"
+  div
+    span is_public:
+    input type="checkbox" name="note.is_public" value="true"
   input type="submit" value="Save"
