@@ -23,15 +23,15 @@ describe Note::Note do
       it { should eq '2018/06/23' }
     end
 
-    context '.public?' do
-      subject { @note.public? }
+    context '.is_public?' do
+      subject { @note.is_public? }
       it { should be_falsy }
     end
 
-    context '.public=true' do
-      before { @note.public = true }
-      context '.public?' do
-        subject { @note.public? }
+    context '.is_public=true' do
+      before { @note.is_public = true }
+      context '.is_public?' do
+        subject { @note.is_public? }
         it { should be_truthy }
       end
     end
