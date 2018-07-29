@@ -42,7 +42,19 @@ spec:
 
 .PHONY: admin
 admin:
-	docker exec -ti homepage w3m http://localhost:8080/admin
+	docker exec -ti -e TERM=xterm homepage w3m http://localhost:8080/admin
+
+zeppelin:
+	docker run \
+		--name zeppelin \
+		--rm \
+		-ti \
+		-p 8080:8080 \
+		-v /home/ec2-user/.ssh:/root/.ssh \
+		-e ZEPPELIN_NOTEBOOK_STORAGE=org.apache.zeppelin.notebook.repo.S3NotebookRepo \
+		-e ZEPPELIN_NOTEBOOK_S3_BUCKET=hiroyuki.sano.ninja \
+		-e ZEPPELIN_NOTEBOOK_S3_USER=zeppelin \
+		apache/zeppelin:0.8.0
 
 console:
 	docker exec -ti homepage bundle exec irb -r ./lib/note

@@ -4,11 +4,12 @@ p
   a href="/admin"
     戻る
 
-form action="/admin/objects" method="post"
-  input type="hidden" name="path" value="#{@note.path}"
-  input type="submit" value="Submit"
-
 pre
-  = @note.to_json
+  = JSON.pretty_generate(JSON.parse(@note.to_json))
+
 textarea
   = JSON.pretty_generate(@note.content)
+
+form action="/admin/save" method="post"
+  input type="hidden" name="path" value="#{@note.path}"
+  input type="submit" value="Save"

@@ -12,7 +12,6 @@ module Admin
       $logger.info('enable reloader')
       register Sinatra::Reloader
       Pathname.glob('lib/**/*.rb').each {|rb| also_reload rb }
-      Note::Note.create_table
     end
 
     helpers do
@@ -49,18 +48,7 @@ module Admin
       slim :preview
     end
 
-    post '/objects' do
-      q = Note::Note.where(path: path)
-
-      m = if q.count > 0
-        q.first
-      else
-        Note::Note.new(path: path)
-      end
-
-      m.fetch
-      m.save
-
+    post '/save' do
       redirect '/'
     end
 
