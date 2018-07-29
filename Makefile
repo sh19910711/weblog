@@ -3,10 +3,11 @@ usage:
 
 image:
 	docker build -t sh19910711/homepage .
-	docker build -t sh19910711/homepage:0.0.9 .
-	docker push sh19910711/homepage:0.0.9
+	docker build -t sh19910711/homepage:0.0.10 .
+	docker push sh19910711/homepage:0.0.10
 
 prod:
+	docker build -t sh19910711/homepage .
 	docker run \
 		--rm \
 		--name homepage \
