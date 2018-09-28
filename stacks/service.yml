@@ -104,7 +104,7 @@ Resources:
                 - Name: homepage
                   Essential: true
                   Image: sh19910711/homepage:0.0.10
-                  Memory: 64
+                  Memory: 128
                   Environment: 
                     - Name: S3_BUCKET
                       Value: cloud9-tmp
