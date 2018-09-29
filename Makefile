@@ -1,10 +1,12 @@
+VERSION=0.0.11
+
 usage:
 	echo make dev
 
 image:
 	docker build -t sh19910711/homepage .
-	docker build -t sh19910711/homepage:0.0.10 .
-	docker push sh19910711/homepage:0.0.10
+	docker build -t sh19910711/homepage:$(VERSION) .
+	docker push sh19910711/homepage:$(VERSION)
 
 prod:
 	docker build -t sh19910711/homepage .
