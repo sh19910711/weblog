@@ -23,11 +23,11 @@ module HomePage
       def og_meta
         if n = @note
           <<-HTML
-            <meta property="og:title" content="#{@title}" />
+            <meta property="og:title" content="#{escape_html @title}" />
             <meta property="og:type" content="article" />
             <meta property="og:url" content="https://hiroyuki.sano.ninja/notes/#{n.id}" />
             <meta property="og:image" content="#{n.image}" />
-            <meta property="og:description" content="#{n.summary}" />
+            <meta property="og:description" content="#{escape_html n.summary}" />
             <meta property="og:site_name" content="#{@site_name}" />
           HTML
         end
