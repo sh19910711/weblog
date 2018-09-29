@@ -56,5 +56,10 @@ zeppelin:
 		-e ZEPPELIN_NOTEBOOK_S3_USER=zeppelin \
 		apache/zeppelin:0.8.0
 
+ec2:
+	sudo yum install vim tmux docker
+	sudo usermod -a -G docker ec2-user
+	sudo service docker restart
+
 console:
 	docker exec -ti homepage bundle exec irb -r ./lib/note
