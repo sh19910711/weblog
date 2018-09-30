@@ -37,7 +37,7 @@ module HomePage
     get '/' do
       q = Note::Note.where(is_public: true)
 
-      @notes = q.all if Note::Note.count > 0
+      @notes = q.all.sort{|a, b| b.created_at <=> a.created_at } if Note::Note.count > 0
 
       slim :index
     end
