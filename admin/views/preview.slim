@@ -22,7 +22,7 @@ form action="/admin/save" method="post"
     input type="hidden" name="note.path" value="#{@note.path}"
   div
     span image:
-    input type="text" name="note.image" value="#{@note.image}"
+    input type="text" name="note.image" value="#{@note.image || 'https://static.sano.ninja/img/image_icon.png'}"
   div
     span is_public:
     input type="text" name="note.is_public" value="#{@note.is_public}"
