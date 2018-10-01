@@ -49,7 +49,7 @@ javascript:
     for (let i = 0; i < elements.length; ++i) {
       const el = elements[i];
       setTimeout(() => {
-        var editor = ace.edit(el.id);
+        const editor = ace.edit(el.id, {minLines: 2, maxLines: 15});
         editor.setTheme("ace/theme/solarized_light");
         if (el.dataset.mode) editor.getSession().setMode(el.dataset.mode);
       }, i*100);
