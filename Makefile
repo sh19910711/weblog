@@ -52,6 +52,7 @@ zeppelin:
 		--rm \
 		-ti \
 		-p 8080:8080 \
+		-v $(HOME)/.aws:/root/.aws \
 		-v /home/ec2-user/.ssh:/root/.ssh \
 		-e ZEPPELIN_NOTEBOOK_STORAGE=org.apache.zeppelin.notebook.repo.S3NotebookRepo \
 		-e ZEPPELIN_NOTEBOOK_S3_BUCKET=hiroyuki.sano.ninja \
