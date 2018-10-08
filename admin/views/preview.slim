@@ -27,4 +27,7 @@ form action="/admin/save" method="post"
     span is_public:
     input type="text" name="note.is_public" value="#{@note.is_public}"
   div
+    span is_development:
+    input type="text" name="note.is_development" value="#{@note.is_development}"
+  div
     input type="submit" value="Save"

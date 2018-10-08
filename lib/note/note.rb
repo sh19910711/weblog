@@ -19,6 +19,7 @@ module Note
     field :name, :string
     field :image, :string
     field :is_public, :boolean
+    field :is_development, :boolean
 
     has_many :tags, :class => ::Note::Tag
 

@@ -20,6 +20,10 @@ module HomePage
     end
 
     helpers do
+      def development?
+        ENV['RACK_ENV'] == 'development'
+      end
+
       def og_meta
         if n = @note
           <<-HTML
@@ -38,6 +42,10 @@ module HomePage
       q = Note::Note.where(is_public: true)
 
       @notes = q.all.sort{|a, b| b.created_at <=> a.created_at } if Note::Note.count > 0
+
+      if development?
+        @notes += Note::Note.where(is_development: true).all.to_a
+      end
 
       slim :index
     end

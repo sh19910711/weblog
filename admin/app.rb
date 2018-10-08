@@ -27,6 +27,10 @@ module Admin
         params['note.is_public'].strip == "true"
       end
 
+      def param_is_development
+        params['note.is_development'].strip == "true"
+      end
+
       def param_image
         params['note.image'].strip
       end
@@ -69,6 +73,7 @@ module Admin
 
       note.image = param_image
       note.is_public = param_is_public
+      note.is_development = param_is_development
       note.fetch
       note.save
 
