@@ -42,7 +42,7 @@ module Admin
       @objects = keys.map {|k| "s3://#{ENV['S3_BUCKET']}/#{k}" }
 
       @notes = if Note::Note.all.count > 0
-        Note::Note.all.reduce(Hash.new) {|o, n| o[n.path] = n; o }
+        Note::Note.all.sort{|a, b| b.created_at <=> a.created_at }.reduce(Hash.new) {|o, n| o[n.path] = n; o }
       else
         Hash.new
       end
