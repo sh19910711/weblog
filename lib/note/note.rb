@@ -33,7 +33,7 @@ module Note
 
     def summary
       if p = paragraphs.first
-        p.text.gsub(/^%.*\s/, '')
+        p.text.gsub(/^%.*\s/, '').gsub(/\\\\[\(\)]/, '')
       end
     end
 
