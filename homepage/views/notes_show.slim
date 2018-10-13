@@ -45,7 +45,27 @@ sass:
 
 javascript:
   (function() {
-    const elements = document.getElementsByClassName('paragraph-text');
+    const elements = document.getElementsByTagName('code');
+    for (let i = 0; i < elements.length; ++i) {
+      const el = elements[i];
+      if (el.className == '') continue;
+      const wrapper = document.createElement('div');
+      wrapper.id = 'code-' + i;
+      if (el.className == 'cpp') wrapper.dataset.mode = 'ace/mode/c_cpp';
+
+      el.before(wrapper);
+      wrapper.appendChild(el);
+
+      setTimeout(() => {
+        const editor = ace.edit(wrapper.id, {minLines: 2, maxLines: 15});
+        editor.setTheme("ace/theme/solarized_light");
+        if (wrapper.dataset.mode) editor.getSession().setMode(wrapper.dataset.mode);
+      }, i*100);
+    }
+  })();
+
+  (function() {
+    const elements = document.getElementsByClassName('paragraph-text')
     for (let i = 0; i < elements.length; ++i) {
       const el = elements[i];
       setTimeout(() => {
