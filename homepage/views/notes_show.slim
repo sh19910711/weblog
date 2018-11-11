@@ -20,6 +20,9 @@
           .col-sm-12
             - if r.type === 'HTML' || r.type === 'ANGULAR'
               == r.data
+            - elsif r.type === 'GRAPH'
+              script.graph type="application/json" data-config="#{r.config.to_json}"
+                == r.data
             - else
               pre.paragraph-results id="results-#{p.id}"
                 = r.data
@@ -81,5 +84,60 @@ javascript:
     for (let i = 0; i < elements.length; ++i) {
       const el = elements[i];
       el.className += ' embed-responsive';
+    }
+  })();
+
+  // draw graphs
+  (function() {
+    const elements = document.getElementsByClassName('graph');
+    for (let i = 0; i < elements.length; ++i) {
+      const script = elements[i];
+      const config = JSON.parse(script.dataset.config);
+
+      if (config.mode == 'table') {
+        const table = document.createElement('table');
+        table.className = 'table';
+        const lines = script.innerText.split('\n');
+        for (let i = 0; i < lines.length; ++ i) {
+          const row = table.insertRow();
+          const cell = row.insertCell();
+          cell.innerText = lines[i];
+        }
+        script.parentNode.insertBefore(table, script);
+      } else if (config.mode == 'lineChart') {
+        const div = document.createElement('div');
+        const k = config.keys[0].index;
+        const v = config.values[0].index;
+        const data = script.innerText.split('\n').map(l => l.split('\t'));
+        const points = [];
+        for (let i = 1; i < data.length - 1; ++i) {
+          points.push({
+            key: new Date(data[i][k]),
+            value: parseInt(data[i][v], 10)
+          });
+        }
+
+        // line chart
+        const width = 640;
+        const height = 300;
+        const svg = d3.select(div).append('svg');
+        svg.attr('width', width).attr('height', height);
+        const x = d3.scaleTime().rangeRound([0, width]);
+        const y = d3.scaleLinear().rangeRound([height, 0]);
+        const line = d3.line().x(d => x(d.key)).y(d => y(d.value));
+        x.domain(d3.extent(points, d => d.key));
+        y.domain(d3.extent(points, d => d.value));
+        const g = svg.append('g');
+        g.append('path')
+          .datum(points)
+          .attr('fill', 'none')
+          .attr('stroke', 'steelblue')
+          .attr('stroke-linejoin', 'round')
+          .attr('stroke-linecap', 'round')
+          .attr('stroke-width', 1.5)
+          .attr('d', line);
+
+        script.parentNode.insertBefore(div, script);
+      }
     }
   })();

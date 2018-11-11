@@ -15,9 +15,17 @@ module Note
     end
 
     def results
-      if res = content['results']
-        s = Struct.new(:type, :data)
-        content['results']['msg'].map{|m| s.new(m['type'], m['data'].gsub(/<div>$/, '</div>')) }
+      if content['results']
+        s = Struct.new(:type, :data, :config)
+        content['results']['msg'].map.with_index do |m, i|
+          c = content['config']['results'][i.to_s]
+
+          if c && c['graph']
+            s.new('GRAPH', m['data'], c['graph'])
+          else
+            s.new(m['type'], m['data'].gsub(/<div>$/, '</div>'))
+          end
+        end
       else
         Array.new
       end
