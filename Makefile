@@ -59,6 +59,18 @@ zeppelin:
 		-e ZEPPELIN_NOTEBOOK_S3_USER=zeppelin \
 		apache/zeppelin:0.8.0
 
+/tmp/zeppelin:
+	mkdir -p /tmp/zeppelin && \
+		cd /tmp/zeppelin && \
+		curl https://www-eu.apache.org/dist/zeppelin/zeppelin-0.8.0/zeppelin-0.8.0-bin-netinst.tgz | tar zxvf - && \
+		/tmp/zeppelin/zeppelin-0.8.0-bin-netinst/bin/install-interpreter.sh --name md,shell,jdbc
+
+zeppelin_gpu: /tmp/zeppelin
+	ZEPPELIN_NOTEBOOK_STORAGE=org.apache.zeppelin.notebook.repo.S3NotebookRepo \
+	ZEPPELIN_NOTEBOOK_S3_BUCKET=hiroyuki.sano.ninja \
+	ZEPPELIN_NOTEBOOK_S3_USER=zeppelin \
+	/tmp/zeppelin/zeppelin-0.8.0-bin-netinst/bin/zeppelin.sh
+
 ec2:
 	sudo yum install vim tmux docker
 	sudo usermod -a -G docker ec2-user
