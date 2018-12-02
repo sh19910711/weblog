@@ -39,12 +39,12 @@ module HomePage
     end
 
     get '/' do
-      q = Note::Note.where(is_public: true)
+      q = Note::Note.where(is_public: 't')
 
       @notes = q.all.sort{|a, b| b.created_at <=> a.created_at } if Note::Note.count > 0
 
       if development?
-        @notes += Note::Note.where(is_development: true).all.to_a
+        @notes += Note::Note.where(is_development: 't').all.to_a
       end
 
       slim :index

@@ -14,6 +14,7 @@ gem "sass"
 
 gem "aws-sdk"
 gem "dynamoid"
+gem "tzinfo-data"
 
 group :development do
   gem "byebug"

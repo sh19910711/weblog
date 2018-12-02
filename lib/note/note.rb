@@ -18,8 +18,8 @@ module Note
     field :path, :string
     field :name, :string
     field :image, :string
-    field :is_public, :boolean
-    field :is_development, :boolean
+    field :is_public, :string
+    field :is_development, :string
 
     has_many :tags, :class => ::Note::Tag
 
