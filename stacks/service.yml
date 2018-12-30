@@ -100,6 +100,10 @@ Resources:
             Family: homepage
             ExecutionRoleArn: !Ref TaskRole
             TaskRoleArn: !Ref TaskRole
+            Volumes:
+              - Name: volume-mysql
+                Host:
+                  SourcePath: /opt/mysql
             ContainerDefinitions:
                 - Name: homepage
                   Essential: true
@@ -117,6 +121,26 @@ Resources:
                   PortMappings:
                     - Protocol: tcp
                       ContainerPort: 8080
+                  Links:
+                    - mysql
+                  LogConfiguration:
+                    LogDriver: awslogs
+                    Options:
+                        awslogs-group: !Ref AWS::StackName
+                        awslogs-region: !Ref AWS::Region
+                - Name: mysql
+                  Essential: true
+                  Image: mysql:8.0.13
+                  Memory: 256
+                  PortMappings:
+                    - Protocol: tcp
+                      ContainerPort: 3306
+                  MountPoints:
+                    - ContainerPath: /var/lib/mysql
+                      SourceVolume: volume-mysql
+                  Environment:
+                    - Name: MYSQL_ROOT_PASSWORD
+                      Value: mysql
                   LogConfiguration:
                     LogDriver: awslogs
                     Options:
