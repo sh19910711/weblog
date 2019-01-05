@@ -1,15 +1,14 @@
 VERSION=0.0.21
 
-usage:
-	echo make dev
+.PHONY: image push prod dev spec admin zeppelin ec2 console
 
-image:
-	docker build -t sh19910711/homepage .
+build:
 	docker build -t sh19910711/homepage:$(VERSION) .
+
+push:
 	docker push sh19910711/homepage:$(VERSION)
 
-prod:
-	docker build -t sh19910711/homepage .
+prod: build
 	docker run \
 		--rm \
 		--name homepage \
@@ -20,10 +19,10 @@ prod:
 		-v $(HOME)/.aws:/root/.aws \
 		-p 8080:8080 \
 		-ti \
-		sh19910711/homepage
+		sh19910711/homepage:latest
 
-dev:
-	docker build -t sh19910711/homepage:development -f Dockerfile.dev .
+dev: build
+	docker build -t sh19910711/homepage:development ./dev
 	docker run \
 		--rm \
 		--name homepage \
