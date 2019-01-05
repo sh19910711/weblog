@@ -1,7 +1,8 @@
 FROM ruby:2.5.1-alpine
 
-ADD Gemfile /wrk/Gemfile
-ADD Gemfile.lock /wrk/Gemfile.lock
+RUN mkdir /wrk
+ADD Gemfile /wrk/
+ADD Gemfile.lock /wrk/
 WORKDIR /wrk
 RUN apk update && \
   apk add build-base libffi-dev && \

@@ -3,7 +3,8 @@ VERSION=0.0.21
 .PHONY: image push prod dev spec admin zeppelin ec2 console
 
 build:
-	docker build -t sh19910711/homepage:$(VERSION) .
+	docker build -t sh19910711/homepage .
+	docker tag sh19910711/homepage sh19910711/homepage:$(VERSION)
 
 push:
 	docker push sh19910711/homepage:$(VERSION)
@@ -34,8 +35,16 @@ dev: build
 		-v $(PWD):/wrk \
 		-v $(HOME)/.w3m:/root/.w3m \
 		-p $(PORT):8080 \
+		--link mysql \
 		-ti \
 		sh19910711/homepage:development
+
+dev/mysql:
+	docker run \
+		--rm \
+		--name mysql \
+		-e MYSQL_ROOT_PASSWORD=mysql \
+		mysql:8.0.13
 
 .PHONY: spec
 spec:
@@ -59,21 +68,7 @@ zeppelin:
 		-e ZEPPELIN_INTERPRETER_OUTPUT_LIMIT=10240000 \
 		apache/zeppelin:0.8.0
 
-/tmp/zeppelin:
-	mkdir -p /tmp/zeppelin && \
-		cd /tmp/zeppelin && \
-		curl https://www-eu.apache.org/dist/zeppelin/zeppelin-0.8.0/zeppelin-0.8.0-bin-all.tgz | tar zxvf -
-
-zeppelin_gpu: /tmp/zeppelin
-	ZEPPELIN_NOTEBOOK_STORAGE=org.apache.zeppelin.notebook.repo.S3NotebookRepo \
-	ZEPPELIN_NOTEBOOK_S3_BUCKET=hiroyuki.sano.ninja \
-	ZEPPELIN_NOTEBOOK_S3_USER=zeppelin \
-	/tmp/zeppelin/zeppelin-0.8.0-bin-all/bin/zeppelin.sh
-
-ec2:
+setup/amazonlinux:
 	sudo yum install vim tmux docker
 	sudo usermod -a -G docker ec2-user
 	sudo service docker restart
-
-console:
-	docker exec -ti homepage bundle exec irb -r ./lib/note
