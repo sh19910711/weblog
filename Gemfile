@@ -11,6 +11,8 @@ gem "sinatra"
 gem "sinatra-contrib"
 gem "slim"
 gem "sass"
+gem "activerecord"
+gem "mysql2"
 
 gem "aws-sdk"
 gem "dynamoid"

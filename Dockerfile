@@ -5,7 +5,10 @@ ADD Gemfile /wrk/
 ADD Gemfile.lock /wrk/
 WORKDIR /wrk
 RUN apk update && \
-  apk add build-base libffi-dev && \
+  apk add \
+    build-base \
+    libffi-dev \
+    mysql-dev && \
   bundle install -j4 --without development
 
 ENV RACK_ENV=production

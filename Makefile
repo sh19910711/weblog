@@ -44,7 +44,7 @@ dev/mysql:
 		--rm \
 		--name mysql \
 		-e MYSQL_ROOT_PASSWORD=mysql \
-		mysql:8.0.13
+		mariadb:10.4.1
 
 .PHONY: spec spec/all
 spec:

@@ -1,0 +1,6 @@
+host: 'mysql'
+username: 'root'
+password: 'mysql'
+adapter: 'mysql2'
+encoding: 'utf8'
+database: 'homepage'
