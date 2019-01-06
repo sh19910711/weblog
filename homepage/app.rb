@@ -1,13 +1,14 @@
 libdir = File.join(File.dirname(__FILE__), '../lib')
 $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
+
+require 'database'
+require 'model'
 require 'content'
 require 'storage'
 
 require 'sinatra'
 require 'logger'
 require 'sinatra/reloader' if development?
-
-
 
 $logger = Logger.new(STDOUT)
 
@@ -44,12 +45,12 @@ module Homepage
     end
 
     get '/' do
-      q = Note::Note.where(is_public: 't')
+      q = Model::Note.where(is_public: 't')
 
-      @notes = q.all.sort{|a, b| b.created_at <=> a.created_at } if Note::Note.count > 0
+      @notes = q.all.sort{|a, b| b.created_at <=> a.created_at } if Model::Note.count > 0
 
       if development?
-        @notes += Note::Note.where(is_development: 't').all.to_a
+        @notes += Model::Note.where(is_public: 'f').all.to_a
       end
 
       slim :index

@@ -5,6 +5,9 @@ create table notes (
   url varchar(255),
   image varchar(255),
   is_public tinyint(1),
+  --
+  name varchar(255),
+  --
   created_at timestamp,
   updated_at timestamp
 )
