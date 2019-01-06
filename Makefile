@@ -48,10 +48,10 @@ dev/mysql:
 
 .PHONY: spec spec/all
 spec:
-	docker exec homepage bundle exec rspec -t ~e2e
+	docker exec -e DATABASE_USERNAME -e DATABASE_PASSWORD homepage bundle exec rspec -t ~e2e
 
 spec/all:
-	docker exec homepage bundle exec rspec
+	docker exec -e DATABASE_USERNAME -e DATABASE_PASSWORD homepage bundle exec rspec
 
 .PHONY: admin
 admin:
