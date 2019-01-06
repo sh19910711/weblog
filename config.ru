@@ -6,4 +6,4 @@ def logger.write(msg)
 end
 use Rack::CommonLogger, logger
 
-run HomePage::App
+run Homepage::App

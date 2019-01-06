@@ -18,5 +18,6 @@ gem "tzinfo-data"
 
 group :development do
   gem "byebug"
+  gem "rack-test"
   gem "rspec"
 end

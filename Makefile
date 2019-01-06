@@ -46,8 +46,11 @@ dev/mysql:
 		-e MYSQL_ROOT_PASSWORD=mysql \
 		mysql:8.0.13
 
-.PHONY: spec
+.PHONY: spec spec/all
 spec:
+	docker exec homepage bundle exec rspec -t ~e2e
+
+spec/all:
 	docker exec homepage bundle exec rspec
 
 .PHONY: admin

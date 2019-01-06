@@ -714,6 +714,8 @@ GEM
     rack (2.0.6)
     rack-protection (2.0.5)
       rack
+    rack-test (1.1.0)
+      rack (>= 1.0, < 3)
     rb-fsevent (0.10.3)
     rb-inotify (0.10.0)
       ffi (~> 1.0)
@@ -766,6 +768,7 @@ DEPENDENCIES
   byebug
   dynamoid
   puma
+  rack-test
   rspec
   sass
   sinatra

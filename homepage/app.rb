@@ -1,12 +1,17 @@
+libdir = File.join(File.dirname(__FILE__), '../lib')
+$LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
+require 'content'
+require 'storage'
+
 require 'sinatra'
 require 'logger'
 require 'sinatra/reloader' if development?
 
-require_relative '../lib/note'
+
 
 $logger = Logger.new(STDOUT)
 
-module HomePage
+module Homepage
   class App < Sinatra::Base
     configure :development do
       $logger.info('enable reloader')
