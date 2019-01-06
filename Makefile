@@ -19,6 +19,7 @@ prod: build
 		-e S3_PREFIX=zeppelin/ \
 		-v $(HOME)/.aws:/root/.aws \
 		-p 8080:8080 \
+		--link mysql \
 		-ti \
 		sh19910711/homepage:latest
 
