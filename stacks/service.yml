@@ -103,7 +103,7 @@ Resources:
             Volumes:
               - Name: volume-mysql
                 Host:
-                  SourcePath: /opt/mysql
+                  SourcePath: /opt/mariadb
             ContainerDefinitions:
                 - Name: homepage
                   Essential: true
@@ -130,7 +130,7 @@ Resources:
                         awslogs-region: !Ref AWS::Region
                 - Name: mysql
                   Essential: true
-                  Image: mysql:8.0.13
+                  Image: mariadb:10.4.1
                   Memory: 256
                   PortMappings:
                     - Protocol: tcp
