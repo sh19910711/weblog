@@ -9,6 +9,10 @@ module Content
         @content = JSON.parse(body)
       end
 
+      def name
+        content['name']
+      end
+
       def summary
         if p = paragraphs.first
           p.text.gsub(/^%.*\s/, '').gsub(/\\\\[\(\)]/, '')

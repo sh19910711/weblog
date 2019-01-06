@@ -35,9 +35,9 @@ module Homepage
           <<-HTML
             <meta property="og:title" content="#{escape_html @title}" />
             <meta property="og:type" content="article" />
-            <meta property="og:url" content="https://hiroyuki.sano.ninja/notes/#{n.id}" />
+            <meta property="og:url" content="https://hiroyuki.sano.ninja/notes/#{n.note_id}" />
             <meta property="og:image" content="#{n.image}" />
-            <meta property="og:description" content="#{escape_html n.summary}" />
+            <meta property="og:description" content="#{escape_html n.content.summary}" />
             <meta property="og:site_name" content="#{@site_name}" />
           HTML
         end
@@ -57,9 +57,8 @@ module Homepage
     end
 
     get '/notes/:id' do
-      @note = Note::Note.find(params[:id])
-      @note.fetch
-
+      @note = Model::Note.find_by(note_id: params[:id])
+      @note.read_content!
       @title = "#{@note.subject} - #{@title}"
 
       slim :notes_show

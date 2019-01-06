@@ -6,7 +6,7 @@
       = "Posted at #{@note.date}"
 
 .paragraphs
-  - @note.paragraphs.each do |p|
+  - @note.content.paragraphs.each do |p|
     .paragraph
       .row
         h3.paragraph-title.col-sm-12= p.title

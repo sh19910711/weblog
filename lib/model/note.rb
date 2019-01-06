@@ -1,4 +1,5 @@
 require 'storage'
+require 'content'
 
 module Model
   class Note < ActiveRecord::Base
@@ -7,10 +8,10 @@ module Model
     def read_content!
       if note_type == 'zeppelin'
         s3 = Storage::S3.new
-        @content = JSON.parse(s3.read_object(url))
+        @content = Content::Zeppelin::Reader.new(s3.read_object(url))
       end
 
-      update(name: content['name']) if name != content['name']
+      update(name: content.name) if name != content.name
     end
 
     def subject
