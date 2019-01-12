@@ -42,20 +42,25 @@ module Homepage
           HTML
         end
       end
+
+      def aggregated_tags
+        es = Storage::Elasticsearch.new
+        aggregates_params = {
+          'all_tags': {
+            'terms': {
+              'field': 'tag'
+            }
+          }
+        }
+        res = es.search('note_tags', {'aggs': aggregates_params})
+        res['aggregations']['all_tags']['buckets']
+      end
     end
 
     get '/' do
       q = Model::Note.where(is_public: 't')
-
-      @notes = if Model::Note.count > 0
-        q.all.sort{|a, b| b.created_at <=> a.created_at } 
-      else
-        Array.new
-      end
-
-      if development?
-        @notes += Model::Note.where(is_public: 'f').all.to_a
-      end
+      q = q.or(Model::Note.where(is_public: 'f')) if development?
+      @notes = q.order('created_at desc').all
 
       slim :index
     end
@@ -66,6 +71,21 @@ module Homepage
       @title = "#{@note.subject} - #{@title}"
 
       slim :notes_show
+    end
+
+    get '/tags/:key' do
+      es = Storage::Elasticsearch.new
+      query_params = {
+        match: {
+          tag: params[:key]
+        }
+      }
+      res = es.search('note_tags', {'query': query_params})
+      note_ids = res['hits']['hits'].map{|hit| hit['_source']['note_id'] }
+
+      @notes = Model::Note.where(note_id: note_ids).order('created_at desc')
+
+      slim :index
     end
 
     get '/ping' do

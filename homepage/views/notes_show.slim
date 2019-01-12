@@ -4,9 +4,10 @@
       = @note.subject
     ul.note-tags
       - @note.tags.each do |tag|
-        li.note-tag= tag
+        li.note-tag
+          a href="/tags/#{tag}"= tag
     .date
-      = "Posted at #{@note.date}"
+      = "Posted on #{@note.date}"
 
 .paragraphs
   - @note.content.paragraphs.each do |p|
