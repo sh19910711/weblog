@@ -37,6 +37,7 @@ dev: build
 		-v $(HOME)/.w3m:/root/.w3m \
 		-p $(PORT):8080 \
 		--link mysql \
+		--link search \
 		-ti \
 		sh19910711/homepage:development
 

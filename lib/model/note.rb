@@ -21,5 +21,21 @@ module Model
     def date
       created_at.strftime('%Y/%m/%d')
     end
+
+    def tags
+      es = Storage::Elasticsearch.new
+      query_params = {
+        match: {
+          note_id: note_id
+        }
+      }
+      sort_params = {
+        tag: {
+          order: 'asc'
+        }
+      }
+      res = es.search('note_tags', {query: query_params, sort: sort_params})
+      res['hits']['hits'].map {|hit| hit['_source']['tag'] }
+    end
   end
 end
