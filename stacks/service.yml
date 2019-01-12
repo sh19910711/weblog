@@ -108,7 +108,7 @@ Resources:
                 - Name: homepage
                   Essential: true
                   Image: sh19910711/homepage:0.0.22
-                  Memory: 128
+                  Memory: 100
                   Environment: 
                     - Name: S3_BUCKET
                       Value: cloud9-tmp
@@ -131,7 +131,7 @@ Resources:
                 - Name: mysql
                   Essential: true
                   Image: mariadb:10.4.1
-                  Memory: 256
+                  Memory: 100
                   PortMappings:
                     - Protocol: tcp
                       ContainerPort: 3306

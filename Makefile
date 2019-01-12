@@ -44,6 +44,8 @@ dev/mysql:
 	docker run \
 		--rm \
 		--name mysql \
+		--memory 100MB \
+		--memory-swap 100MB \
 		-e MYSQL_ROOT_PASSWORD=mysql \
 		mariadb:10.4.1
 
