@@ -49,6 +49,13 @@ dev/mysql:
 		-e MYSQL_ROOT_PASSWORD=mysql \
 		mariadb:10.4.1
 
+dev/search:
+	docker run \
+		--rm \
+		--name search \
+		 -e "discovery.type=single-node" \
+		docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+
 .PHONY: spec spec/all
 spec:
 	docker exec -e DATABASE_USERNAME -e DATABASE_PASSWORD homepage bundle exec rspec -t ~e2e
