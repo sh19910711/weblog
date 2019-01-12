@@ -47,7 +47,11 @@ module Homepage
     get '/' do
       q = Model::Note.where(is_public: 't')
 
-      @notes = q.all.sort{|a, b| b.created_at <=> a.created_at } if Model::Note.count > 0
+      @notes = if Model::Note.count > 0
+        q.all.sort{|a, b| b.created_at <=> a.created_at } 
+      else
+        Array.new
+      end
 
       if development?
         @notes += Model::Note.where(is_public: 'f').all.to_a

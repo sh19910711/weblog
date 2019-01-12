@@ -54,6 +54,7 @@ dev/search:
 		--rm \
 		--name search \
 		 -e "discovery.type=single-node" \
+		 -v /tmp/docker/search:/usr/share/elasticsearch/data \
 		docker.elastic.co/elasticsearch/elasticsearch:6.5.4
 
 .PHONY: spec spec/all
