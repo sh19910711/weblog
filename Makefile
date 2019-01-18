@@ -56,6 +56,9 @@ dev/search:
 		--name search \
 		 -e "discovery.type=single-node" \
 		 -v /tmp/docker/search:/usr/share/elasticsearch/data \
+		 -e ES_JAVA_OPTS="-Xms64m -Xmx64m" \
+		 --memory 280M \
+		 --memory-swap 280M \
 		docker.elastic.co/elasticsearch/elasticsearch:6.5.4
 
 .PHONY: spec spec/all
