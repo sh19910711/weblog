@@ -37,6 +37,7 @@ dev: build
 		-v $(HOME)/.w3m:/root/.w3m \
 		-p $(PORT):8080 \
 		--link mysql \
+		--link search \
 		-ti \
 		sh19910711/homepage:development
 
@@ -54,6 +55,7 @@ dev/search:
 		--rm \
 		--name search \
 		 -e "discovery.type=single-node" \
+		 -v /tmp/docker/search:/usr/share/elasticsearch/data \
 		 -e ES_JAVA_OPTS="-Xms64m -Xmx64m" \
 		 --memory 280M \
 		 --memory-swap 280M \

@@ -13,10 +13,8 @@ gem "slim"
 gem "sass"
 gem "activerecord"
 gem "mysql2"
-
-gem "aws-sdk"
-gem "dynamoid"
-gem "tzinfo-data"
+gem "aws-sdk-s3"
+gem "elasticsearch", "~> 6.1.0"
 
 group :development do
   gem "byebug"
