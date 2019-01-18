@@ -104,6 +104,9 @@ Resources:
               - Name: volume-mysql
                 Host:
                   SourcePath: /opt/mariadb
+              - Name: volume-search
+                Host:
+                  SourcePath: /opt/search
             ContainerDefinitions:
                 - Name: homepage
                   Essential: true
@@ -123,6 +126,7 @@ Resources:
                       ContainerPort: 8080
                   Links:
                     - mysql
+                    - search
                   LogConfiguration:
                     LogDriver: awslogs
                     Options:
@@ -141,6 +145,26 @@ Resources:
                   Environment:
                     - Name: MYSQL_ROOT_PASSWORD
                       Value: mysql
+                  LogConfiguration:
+                    LogDriver: awslogs
+                    Options:
+                        awslogs-group: !Ref AWS::StackName
+                        awslogs-region: !Ref AWS::Region
+                - Name: search
+                  Essential: true
+                  Image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+                  Memory: 280
+                  PortMappings:
+                    - Protocol: tcp
+                      ContainerPort: 9200
+                  MountPoints:
+                    - ContainerPath: /usr/share/elasticsearch/data
+                      SourceVolume: volume-search
+                  Environment:
+                    - Name: discovery.type
+                      Value: single-node
+                    - Name: ES_JAVA_OPTS
+                      Value: "-Xms64m -Xmx64m"
                   LogConfiguration:
                     LogDriver: awslogs
                     Options:
