@@ -1,19 +1,24 @@
 title 管理画面
 h1 管理画面
 
-h2 公開済み
-ul
-  - @notes.each do |path, note|
-    li
-      form method="post" action="/admin/preview"
-        input type="hidden" name="note.path" value="#{path}"
-        input type="submit" value="#{note.name}"
+button 未取得分を取得
 
-h2 ストック
-ul
-  - @objects.each do |o|
-    - unless @notes[o]
-      li
-        form method="post" action="/admin/preview"
-          input type="hidden" name="note.path" value="#{o}"
-          input type="submit" value="#{o}"
+h2 公開中
+table
+  - @notes.each do |note|
+    tr
+      td
+        a href="/admin/edit/#{note.note_id}"
+          | 編集
+      td
+        a href="/notes/#{note.note_id}" = note.subject
+
+h2 下書き
+table
+  - @drafts.each do |note|
+    tr
+      td
+        a href="/admin/edit/#{note.note_id}"
+          | 編集
+      td
+        a href="/notes/#{note.note_id}" = note.subject

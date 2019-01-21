@@ -1,7 +1,13 @@
+libdir = File.join(File.dirname(__FILE__), '../lib')
+$LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
+
+require 'database'
+require 'model'
+require 'content'
+require 'storage'
+
 require 'sinatra'
 require 'sinatra/reloader'
-require_relative '../lib/note'
-require 'aws-sdk'
 require 'byebug'
 
 module Admin
@@ -39,58 +45,35 @@ module Admin
     get '/' do
       s3 = Aws::S3::Resource.new
       keys = s3.bucket(ENV['S3_BUCKET']).objects(prefix: ENV['S3_PREFIX']).map(&:key)
-      @objects = keys.map {|k| "s3://#{ENV['S3_BUCKET']}/#{k}" }
-
-      @notes = if Note::Note.all.count > 0
-        Note::Note.all.sort{|a, b| b.created_at <=> a.created_at }.reduce(Hash.new) {|o, n| o[n.path] = n; o }
-      else
-        Hash.new
+      @objects = keys.map do |k|
+        { url: "s3://#{ENV['S3_BUCKET']}/#{k}" }
       end
+
+      @notes = Model::Note.where(is_public: true).order("created_at desc")
+      @drafts = Model::Note.where(is_public: false).order("created_at desc")
 
       slim :admin
     end
 
-    post '/preview' do
-      q = Note::Note.where(path: param_path)
+    get '/edit/:note_id' do
+      @model = Model::Note.find_by(note_id: params[:note_id])
+      @model.read_content!
 
-      @note = if q.count > 0
-        q.first
-      else
-        Note::Note.new(path: param_path)
-      end
-
-      @note.fetch
-
-      slim :preview
+      slim :edit_note
     end
 
-    post '/save' do
-      note = if param_id.empty?
-        Note::Note.new(path: param_path)
-      else
-        Note::Note.find(param_id)
-      end
+    post '/edit/add_tag' do
+      @model = Model::Note.find_by(note_id: params[:note_id])
+      @model.add_tag(params[:tag])
 
-      note.image = param_image
-      note.is_public = param_is_public
-      note.is_development = param_is_development
-      note.fetch
-      note.save
-
-      redirect '/'
+      redirect "/edit/#{params[:note_id]}"
     end
 
-    get '/notes/:id' do
-      @note = Note::Note.find(params[:id])
+    post '/edit/delete_tag' do
+      @model = Model::Note.find_by(note_id: params[:note_id])
+      @model.delete_tag(params[:tag])
 
-      slim :note
-    end
-
-    post '/notes/:id/delete' do
-      @note = Note::Note.find(params[:id])
-      @note.delete
-
-      redirect '/'
+      redirect "/edit/#{params[:note_id]}"
     end
   end
 end

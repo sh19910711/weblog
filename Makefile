@@ -47,18 +47,24 @@ dev/mysql:
 		--name mysql \
 		--memory 100MB \
 		--memory-swap 100MB \
+		-v /tmp/docker/mysql:/var/lib/mysql \
 		-e MYSQL_ROOT_PASSWORD=mysql \
 		mariadb:10.4.1
+
+dev/mysql/restore:
+	# dump: docker exec 1007347ef909 mysqldump -pmysql homepage | gzip - | aws s3 cp - s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz
+	echo 'create database homepage;' | docker exec -i mysql mysql -pmysql
+	aws s3 cp s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz - | zcat | docker exec -i mysql mysql -pmysql homepage
 
 dev/search:
 	docker run \
 		--rm \
 		--name search \
-		 -e "discovery.type=single-node" \
 		 -v /tmp/docker/search:/usr/share/elasticsearch/data \
+		 -e discovery.type="single-node" \
 		 -e ES_JAVA_OPTS="-Xms64m -Xmx64m" \
-		 --memory 280M \
-		 --memory-swap 280M \
+		 --memory 300M \
+		 --memory-swap 300M \
 		docker.elastic.co/elasticsearch/elasticsearch:6.5.4
 
 .PHONY: spec spec/all

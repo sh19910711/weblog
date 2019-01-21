@@ -1,0 +1,25 @@
+h1 編集画面
+
+h2 記事情報
+ul
+  li= "記事名: #{@model.subject}"
+  li= "要約: #{@model.content.summary}"
+
+h2 タグ
+ul
+  - @model.tags.each do |t|
+    li
+      form action="/admin/edit/delete_tag" method="post"
+        input type="hidden" name="note_id" value="#{@model.note_id}"
+        input type="text" name="tag" value="#{t}"
+        input type="submit" value="削除"
+
+form action="/admin/edit/add_tag" method="post"
+  input type="hidden" name="note_id" value="#{@model.note_id}"
+  input type="text" name="tag"
+  input type="submit" value="追加"
+
+hr
+
+a href="/admin"
+  | 一覧に戻る

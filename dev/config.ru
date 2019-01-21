@@ -1,5 +1,5 @@
-require_relative 'homepage/app'
-require_relative 'admin/app'
+require_relative '../homepage/app'
+require_relative '../admin/app'
 
 map '/' do
   run Homepage::App
