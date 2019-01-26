@@ -14,12 +14,13 @@ prod: build
 		--rm \
 		--name homepage \
 		-e AWS_REGION=us-east-1 \
+		-e DATABASE_HOST \
+		-e SEARCH_HOST \
 		-e RACK_ENV=production \
 		-e S3_BUCKET=hiroyuki.sano.ninja \
 		-e S3_PREFIX=zeppelin/ \
 		-v $(HOME)/.aws:/root/.aws \
 		-p 8080:8080 \
-		--link mysql \
 		-ti \
 		sh19910711/homepage:latest
 
@@ -28,6 +29,8 @@ dev: build
 	docker run \
 		--rm \
 		--name homepage \
+		-e DATABASE_HOST \
+		-e SEARCH_HOST \
 		-e AWS_REGION=us-east-1 \
 		-e RACK_ENV=development \
 		-e S3_BUCKET=hiroyuki.sano.ninja \
@@ -36,8 +39,6 @@ dev: build
 		-v $(PWD):/wrk \
 		-v $(HOME)/.w3m:/root/.w3m \
 		-p $(PORT):8080 \
-		--link mysql \
-		--link search \
 		-ti \
 		sh19910711/homepage:development
 
@@ -47,14 +48,18 @@ dev/mysql:
 		--name mysql \
 		--memory 100MB \
 		--memory-swap 100MB \
+		-p 3306:3306 \
 		-v /tmp/docker/mysql:/var/lib/mysql \
 		-e MYSQL_ROOT_PASSWORD=mysql \
 		mariadb:10.4.1
 
 dev/mysql/restore:
 	# dump: docker exec 1007347ef909 mysqldump -pmysql homepage | gzip - | aws s3 cp - s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz
-	echo 'create database homepage;' | docker exec -i mysql mysql -pmysql
-	aws s3 cp s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz - | zcat | docker exec -i mysql mysql -pmysql homepage
+	echo 'create database homepage;' | docker exec -i mysql mysql
+	aws s3 cp s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz - | zcat | docker exec -i mysql mysql homepage
+
+dev/mysql/grant:
+	cat ./database/sql/grant_user.sql | docker exec -i mysql mysql
 
 dev/search:
 	docker run \
@@ -62,10 +67,13 @@ dev/search:
 		--name search \
 		 -v /tmp/docker/search:/usr/share/elasticsearch/data \
 		 -e discovery.type="single-node" \
+		 -e indices.fielddata.cache.size="0" \
 		 -e ES_JAVA_OPTS="-Xms64m -Xmx64m" \
-		 --memory 300M \
-		 --memory-swap 300M \
+		 -p 9200:9200 \
 		docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+
+dev/search/init:
+	docker exec homepage bundle exec ruby -Ilib ./database/search/create_homepage.rb
 
 .PHONY: spec spec/all
 spec:

@@ -1,4 +1,4 @@
-host: 'mysql'
+host: <%= ENV['DATABASE_HOST'] || 'mysql' %>
 username: <%= ENV['DATABASE_USERNAME'] || 'homepage' %>
 password: <%= ENV['DATABASE_PASSWORD'] || 'homepage' %>
 adapter: 'mysql2'

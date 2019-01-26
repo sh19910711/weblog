@@ -7,7 +7,7 @@ module Storage
 
     def initialize
       # TODO: stop hard coding
-      @client = ::Elasticsearch::Client.new(url: 'http://search:9200', log: true)
+      @client = ::Elasticsearch::Client.new(url: "http://#{ENV['SEARCH_HOST']}:9200", log: true)
       @index = 'homepage'
     end
 

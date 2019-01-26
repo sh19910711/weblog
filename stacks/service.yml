@@ -113,6 +113,10 @@ Resources:
                   Image: sh19910711/homepage:0.0.24
                   Memory: 100
                   Environment: 
+                    - Name: DATABASE_HOST
+                      Value: mysql
+                    - Name: SEARCH_HOST
+                      Value: search
                     - Name: S3_BUCKET
                       Value: cloud9-tmp
                     - Name: S3_PREFIX
