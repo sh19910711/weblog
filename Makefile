@@ -104,7 +104,7 @@ zeppelin:
 		-e ZEPPELIN_NOTEBOOK_S3_BUCKET=hiroyuki.sano.ninja \
 		-e ZEPPELIN_NOTEBOOK_S3_USER=zeppelin \
 		-e ZEPPELIN_INTERPRETER_OUTPUT_LIMIT=10240000 \
-		apache/zeppelin:0.8.0
+		apache/zeppelin:0.8.1
 
 zeppelin2: /tmp/zeppelin
 	ZEPPELIN_NOTEBOOK_STORAGE=org.apache.zeppelin.notebook.repo.S3NotebookRepo \
