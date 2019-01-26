@@ -92,6 +92,18 @@ zeppelin:
 		-e ZEPPELIN_INTERPRETER_OUTPUT_LIMIT=10240000 \
 		apache/zeppelin:0.8.0
 
+zeppelin2: /tmp/zeppelin
+	ZEPPELIN_NOTEBOOK_STORAGE=org.apache.zeppelin.notebook.repo.S3NotebookRepo \
+	ZEPPELIN_NOTEBOOK_S3_BUCKET=hiroyuki.sano.ninja \
+	ZEPPELIN_NOTEBOOK_S3_USER=zeppelin \
+	ZEPPELIN_INTERPRETER_OUTPUT_LIMIT=10240000 \
+	/tmp/zeppelin/zeppelin-0.8.1-bin-all/bin/zeppelin.sh
+
+/tmp/zeppelin:
+	mkdir /tmp/zeppelin && \
+		cd /tmp/zeppelin && \
+		curl https://www-eu.apache.org/dist/zeppelin/zeppelin-0.8.1/zeppelin-0.8.1-bin-all.tgz | tar zxvf -
+
 setup/amazonlinux:
 	sudo yum install vim tmux docker
 	sudo usermod -a -G docker ec2-user
