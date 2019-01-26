@@ -110,7 +110,7 @@ Resources:
             ContainerDefinitions:
                 - Name: homepage
                   Essential: true
-                  Image: sh19910711/homepage:0.0.25
+                  Image: sh19910711/homepage:0.0.26
                   Memory: 100
                   Environment: 
                     - Name: DATABASE_HOST
