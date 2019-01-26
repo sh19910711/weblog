@@ -16,7 +16,7 @@ module Model
     end
 
     def subject
-      name.gsub(/\//, ' / ')
+      name.split('/').reverse.join(' / ')
     end
 
     def date
