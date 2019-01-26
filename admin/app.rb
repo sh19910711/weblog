@@ -30,8 +30,18 @@ module Admin
     get '/edit/:note_id' do
       @model = Model::Note.find_by(note_id: params[:note_id])
       @model.read_content!
+      @model.image ||= 'https://static.sano.ninja/img/image_icon.png'
 
       slim :edit_note
+    end
+
+    post '/edit/update' do
+      @model = Model::Note.find(params[:note_id])
+      @model.image = params['image']
+      @model.is_public = params['is_public'].strip == 'true'
+      @model.save
+
+      redirect '/'
     end
 
     post '/edit/add_tag' do

@@ -1,4 +1,5 @@
 host: <%= ENV['DATABASE_HOST'] || 'mysql' %>
+port: <%= ENV['DATABASE_PORT'] || 3306 %>
 username: <%= ENV['DATABASE_USERNAME'] || 'homepage' %>
 password: <%= ENV['DATABASE_PASSWORD'] || 'homepage' %>
 adapter: 'mysql2'

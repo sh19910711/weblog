@@ -5,6 +5,18 @@ ul
   li= "記事名: #{@model.subject}"
   li= "要約: #{@model.content.summary}"
 
+h2 設定
+form action="/admin/edit/update" method="post"
+  input type="hidden" name="note_id" value="#{@model.id}"
+  div
+    span image:
+    input type="text" name="image" value="#{@model.image}"
+  div
+    span 公開設定:
+    input type="text" name="is_public" value="#{@model.is_public}"
+  div
+    input type="submit" value="更新"
+
 h2 タグ
 ul
   - @model.tags.each do |t|

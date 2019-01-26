@@ -15,7 +15,9 @@ prod: build
 		--name homepage \
 		-e AWS_REGION=us-east-1 \
 		-e DATABASE_HOST \
+		-e DATABASE_PORT \
 		-e SEARCH_HOST \
+		-e SEARCH_PORT \
 		-e RACK_ENV=production \
 		-e S3_BUCKET=hiroyuki.sano.ninja \
 		-e S3_PREFIX=zeppelin/ \
@@ -30,7 +32,11 @@ dev: build
 		--rm \
 		--name homepage \
 		-e DATABASE_HOST \
+		-e DATABASE_PORT \
+		-e DATABASE_USERNAME \
+		-e DATABASE_PASSWORD \
 		-e SEARCH_HOST \
+		-e SEARCH_PORT \
 		-e AWS_REGION=us-east-1 \
 		-e RACK_ENV=development \
 		-e S3_BUCKET=hiroyuki.sano.ninja \
