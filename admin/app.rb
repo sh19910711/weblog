@@ -20,35 +20,7 @@ module Admin
       Pathname.glob('lib/**/*.rb').each {|rb| also_reload rb }
     end
 
-    helpers do
-      def param_id
-        params['note.id'].strip
-      end
-
-      def param_path
-        params['note.path'].strip
-      end
-
-      def param_is_public
-        params['note.is_public'].strip == "true"
-      end
-
-      def param_is_development
-        params['note.is_development'].strip == "true"
-      end
-
-      def param_image
-        params['note.image'].strip
-      end
-    end
-
     get '/' do
-      s3 = Aws::S3::Resource.new
-      keys = s3.bucket(ENV['S3_BUCKET']).objects(prefix: ENV['S3_PREFIX']).map(&:key)
-      @objects = keys.map do |k|
-        { url: "s3://#{ENV['S3_BUCKET']}/#{k}" }
-      end
-
       @notes = Model::Note.where(is_public: true).order("created_at desc")
       @drafts = Model::Note.where(is_public: false).order("created_at desc")
 
@@ -74,6 +46,27 @@ module Admin
       @model.delete_tag(params[:tag])
 
       redirect "/edit/#{params[:note_id]}"
+    end
+
+    post '/import_zeppelin' do
+      s3 = Aws::S3::Resource.new
+      keys = s3.bucket(ENV['S3_BUCKET']).objects(prefix: ENV['S3_PREFIX']).map(&:key)
+      urls = keys.map do |k|
+        "s3://#{ENV['S3_BUCKET']}/#{k}"
+      end
+
+      Model::Note.where(url: urls).each do |note|
+        urls.delete(note.url)
+      end
+
+      Model::Note.transaction do
+        urls.each do |url|
+          puts "import: #{url}"
+          Model::Note.import_zeppelin(url)
+        end
+      end
+
+      redirect "/"
     end
   end
 end

@@ -1,5 +1,6 @@
 require 'storage'
 require 'content'
+require 'securerandom'
 
 module Model
   class Note < ActiveRecord::Base
@@ -68,6 +69,19 @@ module Model
 
       res['hits']['hits'].each do |hit|
         es.delete('note_tags', hit['_id'])
+      end
+    end
+
+    class << self
+      def import_zeppelin(url)
+        note = self.new(
+          note_id: SecureRandom.uuid,
+          note_type: 'zeppelin',
+          url: url,
+          is_public: false
+        )
+        note.read_content!
+        note.save
       end
     end
   end
