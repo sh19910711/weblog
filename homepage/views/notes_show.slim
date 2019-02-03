@@ -24,6 +24,8 @@
           .col-sm-12
             - if r.type === 'HTML' || r.type === 'ANGULAR'
               == r.data
+            - elsif r.type === 'IMG'
+              img src="data:image/png;base64,#{r.data}"
             - elsif r.type === 'GRAPH'
               script.graph type="application/json" data-config="#{r.config.to_json}"
                 == r.data
