@@ -68,3 +68,8 @@ Resources:
       TemplateURL: ./cloudfront.yml
       Parameters:
         FrontURL: !GetAtt LoadBalancer.Outputs.LoadBalancerUrl
+
+  Cognito:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./cognito.yml
