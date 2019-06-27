@@ -51,6 +51,21 @@ Resources:
                 - Key: Name
                   Value: !Sub ${EnvironmentName}-LoadBalancers
 
+    AllowInternal:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        VpcId: !Ref VPC
+        GroupDescription: Allow internal access
+
+    AllowInternalIngress:
+      Type: AWS::EC2::SecurityGroupIngress
+      Properties:
+        GroupId: !Ref  AllowInternal
+        IpProtocol: -1
+        FromPort: 0
+        ToPort: 0
+        SourceSecurityGroupId: !Ref AllowInternal
+
 Outputs:
 
     ECSHostSecurityGroup:
@@ -60,3 +75,7 @@ Outputs:
     LoadBalancerSecurityGroup:
         Description: A reference to the security group for load balancers
         Value: !Ref LoadBalancerSecurityGroup
+
+    AllowInternal:
+        Description: A reference to the security group for load balancers
+        Value: !Ref AllowInternal

@@ -73,3 +73,6 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: ./cognito.yml
+      Parameters:
+        Subnets: !GetAtt VPC.Outputs.Subnets
+        SecurityGroup: !GetAtt SecurityGroup.Outputs.AllowInternal

@@ -1,4 +1,13 @@
 Transform: 'AWS::Serverless-2016-10-31'
+
+Parameters:
+  Subnets:
+    Type: List<AWS::EC2::Subnet::Id>
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+
+
 Resources:
   UserPool:
     Type: AWS::Cognito::UserPool
@@ -49,6 +58,7 @@ Resources:
               Action: lambda:InvokeFunction
               Resource:
                 - !GetAtt NormalFunction.Arn
+                - !GetAtt VPCFunction.Arn
 
   UnauthRole:
     Type: AWS::IAM::Role
@@ -82,6 +92,21 @@ Resources:
       InlineCode: |
         def handler(event, context):
           return 'Hello :-)'
+
+  VPCFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: python3.7
+      InlineCode: |
+        def handler(event, context):
+          return 'Hello from VPC ;-)'
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SecurityGroup
+        SubnetIds: !Ref Subnets
+      Policies:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
 
 Outputs:
   UserPoolID:
