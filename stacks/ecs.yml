@@ -10,7 +10,7 @@ Parameters:
     InstanceType:
         Description: Which instance type should we use to build the ECS cluster?
         Type: String
-        Default: t3.micro
+        Default: m5.large
 
     ClusterSize:
         Description: How many ECS hosts do you want to initially deploy?
@@ -66,7 +66,7 @@ Resources:
     ECSLaunchConfiguration:
         Type: AWS::AutoScaling::LaunchConfiguration
         Properties:
-            ImageId: ami-5253c32d # amzn-ami-2018.03.a-amazon-ecs-optimized
+            ImageId: ami-02507631a9f7bc956 # amzn2-ami-ecs-hvm-2.0.20190614-x86_64-ebs
             InstanceType: !Ref InstanceType
             KeyName: gateway
             AssociatePublicIpAddress: true
@@ -76,19 +76,17 @@ Resources:
             UserData:
                 "Fn::Base64": !Sub |
                     #!/bin/bash
-                    yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-                    yum install -y aws-cfn-bootstrap hibagent
+
+                    yum install -y aws-cfn-bootstrap awslogs
                     /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration
+                    systemctl enable awslogsd
+                    systemctl restart awslogsd
                     /opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSAutoScalingGroup
-                    /usr/bin/enable-ec2-spot-hibernation
+                    echo hello > /opt/userdata.txt
 
         Metadata:
             AWS::CloudFormation::Init:
                 config:
-                    packages:
-                        yum:
-                            awslogs: []
-
                     commands:
                         01_add_instance_to_cluster:
                             command: !Sub echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
@@ -158,18 +156,12 @@ Resources:
 
                     services:
                         sysvinit:
-                            cfn-hup:
+                           cfn-hup:
                                 enabled: true
                                 ensureRunning: true
                                 files:
                                     - /etc/cfn/cfn-hup.conf
                                     - /etc/cfn/hooks.d/cfn-auto-reloader.conf
-                            awslogs:
-                                enabled: true
-                                ensureRunning: true
-                                files:
-                                    - /etc/awslogs/awslogs.conf
-                                    - /etc/awslogs/awscli.conf
 
     # This IAM Role is attached to all of the ECS hosts. It is based on the default role
     # published here:
@@ -286,25 +278,6 @@ Resources:
                       - ecs:UpdateService
                       Resource: "*"
 
-    PrivateNamespace2:
-      Type: AWS::ServiceDiscovery::PrivateDnsNamespace
-      Properties:
-        Name: hello_sd.local
-        Vpc: !Ref VPC
-
-    DiscoveryService2:
-      Type: AWS::ServiceDiscovery::Service
-      Properties:
-        Description: Discovery Service for Backend
-        DnsConfig:
-          DnsRecords:
-            - TTL: 60
-              Type: SRV
-        HealthCheckCustomConfig:
-          FailureThreshold: 1
-        Name: ds
-        NamespaceId: !Ref PrivateNamespace2
-
 Outputs:
     Cluster:
         Description: A reference to the ECS cluster
@@ -317,6 +290,3 @@ Outputs:
     ECSAutoScalingGroupName:
         Description: A reference to ECS AutoScaling Group Name
         Value: !Ref ECSAutoScalingGroup
-
-    DiscoveryArn:
-        Value: !GetAtt DiscoveryService2.Arn
