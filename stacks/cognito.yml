@@ -59,6 +59,7 @@ Resources:
               Resource:
                 - !GetAtt NormalFunction.Arn
                 - !GetAtt VPCFunction.Arn
+                - !GetAtt RubyFunction.Arn
 
   UnauthRole:
     Type: AWS::IAM::Role
@@ -107,6 +108,34 @@ Resources:
         SubnetIds: !Ref Subnets
       Policies:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+
+  RubyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.handler
+      Runtime: ruby2.5
+      CodeUri: ./helloruby
+      MemorySize: 256
+      Timeout: 30
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SecurityGroup
+        SubnetIds: !Ref Subnets
+      Policies:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        - Statement:
+          - Effect: Allow
+            Action:
+              - ecs:ListContainerInstances
+              - ecs:DescribeContainerInstances
+              - ecs:ListTasks
+              - ecs:DescribeTasks
+            Resource:
+              - !Sub arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/homepage
+          - Effect: Allow
+            Action:
+              - ec2:DescribeInstances
+            Resource: '*'
 
 Outputs:
   UserPoolID:
