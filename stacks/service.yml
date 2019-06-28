@@ -38,6 +38,9 @@ Parameters:
         Description: The ECS service auto scaling role ARN
         Type: String
 
+    RegistryArn:
+        Type: String
+
 Resources:
     Service: 
         Type: AWS::ECS::Service
@@ -52,6 +55,10 @@ Resources:
                 - ContainerName: homepage
                   ContainerPort: 8080
                   TargetGroupArn: !Ref TargetGroup
+            ServiceRegistries:
+              - RegistryArn: !Ref RegistryArn
+                ContainerName: homepage
+                ContainerPort: 8080
 
     TaskRole:
       Type: AWS::IAM::Role

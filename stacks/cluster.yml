@@ -55,6 +55,7 @@ Resources:
       TemplateURL: ./service.yml
       Parameters:
         Cluster: !GetAtt ECS.Outputs.Cluster
+        RegistryArn: !GetAtt ECS.Outputs.DiscoveryArn
         VPC: !GetAtt VPC.Outputs.VpcId
         ECSServiceAutoScalingRoleARN: !GetAtt ECS.Outputs.ECSServiceAutoScalingRole
         Listener: !GetAtt LoadBalancer.Outputs.Listener

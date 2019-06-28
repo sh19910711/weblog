@@ -286,6 +286,25 @@ Resources:
                       - ecs:UpdateService
                       Resource: "*"
 
+    PrivateNamespace2:
+      Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+      Properties:
+        Name: hello_sd.local
+        Vpc: !Ref VPC
+
+    DiscoveryService2:
+      Type: AWS::ServiceDiscovery::Service
+      Properties:
+        Description: Discovery Service for Backend
+        DnsConfig:
+          DnsRecords:
+            - TTL: 60
+              Type: SRV
+        HealthCheckCustomConfig:
+          FailureThreshold: 1
+        Name: ds
+        NamespaceId: !Ref PrivateNamespace2
+
 Outputs:
     Cluster:
         Description: A reference to the ECS cluster
@@ -298,3 +317,6 @@ Outputs:
     ECSAutoScalingGroupName:
         Description: A reference to ECS AutoScaling Group Name
         Value: !Ref ECSAutoScalingGroup
+
+    DiscoveryArn:
+        Value: !GetAtt DiscoveryService2.Arn
