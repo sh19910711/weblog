@@ -2,16 +2,16 @@ Description: >
     This is an example of a long running ECS service that needs to connect to another ECS service (product-service)
     via it's load balancer. We use environment variables to pass the URL of the product-service to this one's container(s).
 
-Parameters: 
+Parameters:
     VPC:
         Description: The VPC that the ECS cluster is deployed to
         Type: AWS::EC2::VPC::Id
-        
+
     Cluster:
         Description: Please provide the ECS Cluster ID that this service should run on
         Type: String
 
-    DesiredCount: 
+    DesiredCount:
         Description: How many instances of this task should we run across our cluster?
         Type: Number
         Default: 1
@@ -32,26 +32,111 @@ Parameters:
     SecurityGroup:
         Description: Select the Security Group to apply to the Application Load Balancer
         Type: AWS::EC2::SecurityGroup::Id
-        Default: /
+
+    SecurityGroupAllowInternal:
+        Description: Select the Security Group to apply to the Application Load Balancer
+        Type: AWS::EC2::SecurityGroup::Id
 
     ECSServiceAutoScalingRoleARN:
         Description: The ECS service auto scaling role ARN
         Type: String
 
 Resources:
-    Service: 
+    WebService:
         Type: AWS::ECS::Service
         DependsOn:
           - ListenerRule
-          - TaskDefinition
-        Properties: 
+        Properties:
             Cluster: !Ref Cluster
             DesiredCount: 1
-            TaskDefinition: !Ref TaskDefinition
-            LoadBalancers: 
+            TaskDefinition: !Ref WebTaskDefinition
+            LoadBalancers:
                 - ContainerName: homepage
                   ContainerPort: 8080
                   TargetGroupArn: !Ref TargetGroup
+            ServiceRegistries:
+              - RegistryArn: !GetAtt WebDiscoveryService.Arn
+            NetworkConfiguration:
+              AwsvpcConfiguration:
+                SecurityGroups:
+                  - !Ref SecurityGroup
+                  - !Ref SecurityGroupAllowInternal
+                Subnets: !Ref Subnets
+
+    DatabaseService:
+        Type: AWS::ECS::Service
+        Properties:
+            Cluster: !Ref Cluster
+            DesiredCount: 1
+            TaskDefinition: !Ref DatabaseTaskDefinition
+            ServiceRegistries:
+              - RegistryArn: !GetAtt DatabaseDiscoveryService.Arn
+            NetworkConfiguration:
+              AwsvpcConfiguration:
+                SecurityGroups:
+                  - !Ref SecurityGroup
+                  - !Ref SecurityGroupAllowInternal
+                Subnets: !Ref Subnets
+
+    SearchService:
+        Type: AWS::ECS::Service
+        Properties:
+            Cluster: !Ref Cluster
+            DesiredCount: 1
+            TaskDefinition: !Ref SearchTaskDefinition
+            ServiceRegistries:
+              - RegistryArn: !GetAtt SearchDiscoveryService.Arn
+            NetworkConfiguration:
+              AwsvpcConfiguration:
+                SecurityGroups:
+                  - !Ref SecurityGroup
+                  - !Ref SecurityGroupAllowInternal
+                Subnets: !Ref Subnets
+
+    PrivateNamespace2:
+      Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+      Properties:
+        Name: homepage2
+        Vpc: !Ref VPC
+
+    WebDiscoveryService:
+      Type: AWS::ServiceDiscovery::Service
+      Properties:
+        Description: Discovery Service for Backend
+        DnsConfig:
+          DnsRecords:
+            - TTL: 10
+              Type: A
+        HealthCheckCustomConfig:
+          FailureThreshold: 1
+        Name: web
+        NamespaceId: !Ref PrivateNamespace2
+
+    DatabaseDiscoveryService:
+      Type: AWS::ServiceDiscovery::Service
+      Properties:
+        Description: Discovery Service for Backend
+        DnsConfig:
+          DnsRecords:
+            - TTL: 10
+              Type: A
+        HealthCheckCustomConfig:
+          FailureThreshold: 1
+        Name: database
+        NamespaceId: !Ref PrivateNamespace2
+
+    SearchDiscoveryService:
+      Type: AWS::ServiceDiscovery::Service
+      Properties:
+        Description: Discovery Service for Backend
+        DnsConfig:
+          DnsRecords:
+            - TTL: 10
+              Type: A
+        HealthCheckCustomConfig:
+          FailureThreshold: 1
+        Name: search
+        NamespaceId: !Ref PrivateNamespace2
 
     TaskRole:
       Type: AWS::IAM::Role
@@ -82,41 +167,27 @@ Resources:
                 - "s3:GetObject"
 
             - Effect: Allow
-              Resource: "arn:aws:dynamodb:us-east-1:845933287843:table/dynamoid_notes"
-              Action:
-                - "dynamodb:GetItem"
-                - "dynamodb:Scan"
-                - "dynamodb:Query"
-                - "dynamodb:DescribeTable"
-
-            - Effect: Allow
               Resource: "*"
               Action:
                 - "cloudwatch:*"
 
-    TaskDefinition:
+    WebTaskDefinition:
         Type: AWS::ECS::TaskDefinition
         Properties:
-            Family: homepage
+            Family: homepage-web
             ExecutionRoleArn: !Ref TaskRole
             TaskRoleArn: !Ref TaskRole
-            Volumes:
-              - Name: volume-mysql
-                Host:
-                  SourcePath: /opt/mariadb
-              - Name: volume-search
-                Host:
-                  SourcePath: /opt/search
+            NetworkMode: awsvpc
             ContainerDefinitions:
                 - Name: homepage
                   Essential: true
                   Image: sh19910711/homepage:0.0.26
                   Memory: 100
-                  Environment: 
+                  Environment:
                     - Name: DATABASE_HOST
-                      Value: mysql
+                      Value: mysql.homepage
                     - Name: SEARCH_HOST
-                      Value: search
+                      Value: search.homepage
                     - Name: S3_BUCKET
                       Value: cloud9-tmp
                     - Name: S3_PREFIX
@@ -128,24 +199,29 @@ Resources:
                   PortMappings:
                     - Protocol: tcp
                       ContainerPort: 8080
-                  Links:
-                    - mysql
-                    - search
+                      HostPort: 8080
                   LogConfiguration:
                     LogDriver: awslogs
                     Options:
                         awslogs-group: !Ref AWS::StackName
                         awslogs-region: !Ref AWS::Region
-                - Name: mysql
+
+    DatabaseTaskDefinition:
+        Type: AWS::ECS::TaskDefinition
+        Properties:
+            Family: database
+            ExecutionRoleArn: !Ref TaskRole
+            TaskRoleArn: !Ref TaskRole
+            NetworkMode: awsvpc
+            ContainerDefinitions:
+                - Name: database
                   Essential: true
                   Image: mariadb:10.4.1
-                  Memory: 100
+                  Memory: 512
                   PortMappings:
                     - Protocol: tcp
                       ContainerPort: 3306
-                  MountPoints:
-                    - ContainerPath: /var/lib/mysql
-                      SourceVolume: volume-mysql
+                      HostPort: 3306
                   Environment:
                     - Name: MYSQL_ROOT_PASSWORD
                       Value: mysql
@@ -154,21 +230,28 @@ Resources:
                     Options:
                         awslogs-group: !Ref AWS::StackName
                         awslogs-region: !Ref AWS::Region
+
+    SearchTaskDefinition:
+        Type: AWS::ECS::TaskDefinition
+        Properties:
+            Family: search
+            ExecutionRoleArn: !Ref TaskRole
+            TaskRoleArn: !Ref TaskRole
+            NetworkMode: awsvpc
+            ContainerDefinitions:
                 - Name: search
                   Essential: true
                   Image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
-                  Memory: 280
+                  Memory: 512
                   PortMappings:
                     - Protocol: tcp
                       ContainerPort: 9200
-                  MountPoints:
-                    - ContainerPath: /usr/share/elasticsearch/data
-                      SourceVolume: volume-search
+                      HostPort: 9200
                   Environment:
                     - Name: discovery.type
                       Value: single-node
                     - Name: ES_JAVA_OPTS
-                      Value: "-Xms64m -Xmx64m"
+                      Value: "-Xms256m -Xmx256m"
                   LogConfiguration:
                     LogDriver: awslogs
                     Options:
@@ -177,9 +260,9 @@ Resources:
 
     CloudWatchLogsGroup:
         Type: AWS::Logs::LogGroup
-        Properties: 
+        Properties:
             LogGroupName: !Ref AWS::StackName
-            RetentionInDays: 365  
+            RetentionInDays: 365
 
     TargetGroup:
         Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -187,14 +270,15 @@ Resources:
             VpcId: !Ref VPC
             Port: 80
             Protocol: HTTP
-            Matcher: 
+            TargetType: ip
+            Matcher:
                 HttpCode: 200-299
             HealthCheckIntervalSeconds: 10
             HealthCheckPath: /ping
             HealthCheckProtocol: HTTP
             HealthCheckTimeoutSeconds: 5
             HealthyThresholdCount: 2
-    
+
     ListenerRule:
         Type: AWS::ElasticLoadBalancingV2::ListenerRule
         Properties:
@@ -202,13 +286,13 @@ Resources:
             Priority: 1
             Conditions:
                 - Field: path-pattern
-                  Values: 
+                  Values:
                     - /
             Actions:
                 - TargetGroupArn: !Ref TargetGroup
                   Type: forward
 
-    ServiceScalableTarget:
+    WebServiceScalableTarget:
         Type: "AWS::ApplicationAutoScaling::ScalableTarget"
         Properties:
             MaxCapacity: !Ref MaxCount
@@ -217,17 +301,45 @@ Resources:
                 - /
                 - - service
                   - !Ref Cluster
-                  - !GetAtt Service.Name
+                  - !GetAtt WebService.Name
             RoleARN: !Ref ECSServiceAutoScalingRoleARN
             ScalableDimension: ecs:service:DesiredCount
             ServiceNamespace: ecs
 
-    ServiceScaleOutPolicy:
+    DatabaseServiceScalableTarget:
+        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+        Properties:
+            MaxCapacity: !Ref MaxCount
+            MinCapacity: !Ref DesiredCount
+            ResourceId: !Join
+                - /
+                - - service
+                  - !Ref Cluster
+                  - !GetAtt DatabaseService.Name
+            RoleARN: !Ref ECSServiceAutoScalingRoleARN
+            ScalableDimension: ecs:service:DesiredCount
+            ServiceNamespace: ecs
+
+    SearchServiceScalableTarget:
+        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+        Properties:
+            MaxCapacity: !Ref MaxCount
+            MinCapacity: !Ref DesiredCount
+            ResourceId: !Join
+                - /
+                - - service
+                  - !Ref Cluster
+                  - !GetAtt SearchService.Name
+            RoleARN: !Ref ECSServiceAutoScalingRoleARN
+            ScalableDimension: ecs:service:DesiredCount
+            ServiceNamespace: ecs
+
+    WebServiceScaleOutPolicy:
         Type : "AWS::ApplicationAutoScaling::ScalingPolicy"
         Properties:
-            PolicyName: ServiceScaleOutPolicy
+            PolicyName: WebServiceScaleOutPolicy
             PolicyType: StepScaling
-            ScalingTargetId: !Ref ServiceScalableTarget
+            ScalingTargetId: !Ref WebServiceScalableTarget
             StepScalingPolicyConfiguration:
                 AdjustmentType: ChangeInCapacity
                 Cooldown: 1800
@@ -236,12 +348,68 @@ Resources:
                 - MetricIntervalLowerBound: 0
                   ScalingAdjustment: 1
 
-    ServiceScaleInPolicy:
+    WebServiceScaleInPolicy:
         Type : "AWS::ApplicationAutoScaling::ScalingPolicy"
         Properties:
-            PolicyName: ServiceScaleInPolicy
+            PolicyName: WebServiceScaleInPolicy
             PolicyType: StepScaling
-            ScalingTargetId: !Ref ServiceScalableTarget
+            ScalingTargetId: !Ref WebServiceScalableTarget
+            StepScalingPolicyConfiguration:
+                AdjustmentType: ChangeInCapacity
+                Cooldown: 1800
+                MetricAggregationType: Average
+                StepAdjustments:
+                - MetricIntervalUpperBound: 0
+                  ScalingAdjustment: -1
+
+    DatabaseServiceScaleOutPolicy:
+        Type : "AWS::ApplicationAutoScaling::ScalingPolicy"
+        Properties:
+            PolicyName: DatabaseServiceScaleOutPolicy
+            PolicyType: StepScaling
+            ScalingTargetId: !Ref DatabaseServiceScalableTarget
+            StepScalingPolicyConfiguration:
+                AdjustmentType: ChangeInCapacity
+                Cooldown: 1800
+                MetricAggregationType: Average
+                StepAdjustments:
+                - MetricIntervalLowerBound: 0
+                  ScalingAdjustment: 1
+
+    DatabaseServiceScaleInPolicy:
+        Type : "AWS::ApplicationAutoScaling::ScalingPolicy"
+        Properties:
+            PolicyName: DatabaseServiceScaleInPolicy
+            PolicyType: StepScaling
+            ScalingTargetId: !Ref DatabaseServiceScalableTarget
+            StepScalingPolicyConfiguration:
+                AdjustmentType: ChangeInCapacity
+                Cooldown: 1800
+                MetricAggregationType: Average
+                StepAdjustments:
+                - MetricIntervalUpperBound: 0
+                  ScalingAdjustment: -1
+
+    SearchServiceScaleOutPolicy:
+        Type : "AWS::ApplicationAutoScaling::ScalingPolicy"
+        Properties:
+            PolicyName: SearchServiceScaleOutPolicy
+            PolicyType: StepScaling
+            ScalingTargetId: !Ref SearchServiceScalableTarget
+            StepScalingPolicyConfiguration:
+                AdjustmentType: ChangeInCapacity
+                Cooldown: 1800
+                MetricAggregationType: Average
+                StepAdjustments:
+                - MetricIntervalLowerBound: 0
+                  ScalingAdjustment: 1
+
+    SearchServiceScaleInPolicy:
+        Type : "AWS::ApplicationAutoScaling::ScalingPolicy"
+        Properties:
+            PolicyName: SearchServiceScaleInPolicy
+            PolicyType: StepScaling
+            ScalingTargetId: !Ref SearchServiceScalableTarget
             StepScalingPolicyConfiguration:
                 AdjustmentType: ChangeInCapacity
                 Cooldown: 1800
@@ -260,15 +428,15 @@ Resources:
             Dimensions:
             - Name: ClusterName
               Value: !Ref Cluster
-            - Name: ServiceName
-              Value: !GetAtt Service.Name
             Statistic: Maximum
             Period: '60'
             EvaluationPeriods: '3'
             Threshold: '90'
             ComparisonOperator: GreaterThanThreshold
             AlarmActions:
-            - !Ref ServiceScaleOutPolicy
+            - !Ref WebServiceScaleOutPolicy
+            - !Ref SearchServiceScaleOutPolicy
+            - !Ref DatabaseServiceScaleOutPolicy
 
     CPUScaleInAlarm:
         Type: AWS::CloudWatch::Alarm
@@ -280,12 +448,12 @@ Resources:
             Dimensions:
             - Name: ClusterName
               Value: !Ref Cluster
-            - Name: ServiceName
-              Value: !GetAtt Service.Name
             Statistic: Maximum
             Period: '60'
             EvaluationPeriods: '10'
             Threshold: '70'
             ComparisonOperator: LessThanThreshold
             AlarmActions:
-            - !Ref ServiceScaleInPolicy
+            - !Ref WebServiceScaleInPolicy
+            - !Ref DatabaseServiceScaleInPolicy
+            - !Ref SearchServiceScaleInPolicy
