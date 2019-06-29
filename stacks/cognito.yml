@@ -115,8 +115,8 @@ Resources:
       Handler: app.handler
       Runtime: ruby2.5
       CodeUri: ./helloruby
-      MemorySize: 256
-      Timeout: 30
+      MemorySize: 2048
+      Timeout: 180
       VpcConfig:
         SecurityGroupIds:
           - !Ref SecurityGroup

@@ -185,9 +185,9 @@ Resources:
                   Memory: 100
                   Environment:
                     - Name: DATABASE_HOST
-                      Value: mysql.homepage
+                      Value: database.homepage2
                     - Name: SEARCH_HOST
-                      Value: search.homepage
+                      Value: search.homepage2
                     - Name: S3_BUCKET
                       Value: cloud9-tmp
                     - Name: S3_PREFIX

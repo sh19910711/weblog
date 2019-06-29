@@ -89,6 +89,14 @@ Resources:
       RouteTableId: !Ref RouteTable
       SubnetId: !Ref Subnet2
 
+  VPCEndpointS3:
+    Type: 'AWS::EC2::VPCEndpoint'
+    Properties:
+      RouteTableIds:
+        - !Ref RouteTable
+      ServiceName: !Sub 'com.amazonaws.${AWS::Region}.s3'
+      VpcId: !Ref VPC
+
 Outputs:
   Subnets:
     Value: !Join [',', [!Ref Subnet1, !Ref Subnet2]]

@@ -1,6 +1,7 @@
 .PHONY: build
 build:
 	docker build -t helloruby ./docker
+	docker run --rm -w /rubyapp -v $(PWD):/rubyapp helloruby bundle install -j4
 	docker run --rm -w /rubyapp -v $(PWD):/rubyapp helloruby bundle install -j4 --deployment
 	mkdir -p lib
 	docker run --rm -w /rubyapp -v $(PWD):/rubyapp helloruby cp /usr/lib64/mysql/libmysqlclient.so /rubyapp/lib/
