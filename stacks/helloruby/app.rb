@@ -22,7 +22,7 @@ def handler(event:, context:)
   when 'query'
     res = ActiveRecord::Base.connection.execute(event['sql'])
     res.to_a(:as => :hash).to_json if res
-  when 'search'
+  when 'search:bulk'
     es = Storage::Elasticsearch.new
     es.client.bulk(body: JSON.parse(event['body']))
   end
@@ -35,7 +35,7 @@ if __FILE__ == $0
   body << {index: {_index: 'homepage_note_tags', data: {note_id: '4ba462da-f8f7-4a5a-8366-37e2762eb784', tag: '*algorithm9'}}}
   puts handler(
     event: JSON.parse({
-      'type': 'search',
+      'type': 'search:bulk',
       'body': body.to_json
     }.to_json),
     context: nil
