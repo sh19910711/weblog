@@ -1,4 +1,8 @@
-create table notes (
+create database if not exists homepage;
+create user if not exists homepage identified by 'homepage';
+grant select on homepage.* to homepage@'%';
+
+create table homepage.notes (
   id bigint,
   note_id varchar(255),
   note_type varchar(255),
