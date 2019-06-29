@@ -20,7 +20,7 @@ module Model
     end
 
     def date
-      created_at.strftime('%Y/%m/%d')
+      updated_at.strftime('%Y/%m/%d')
     end
 
     def tags

@@ -1,4 +1,4 @@
-VERSION=0.0.27
+VERSION=0.0.28
 
 .PHONY: image push prod dev spec admin zeppelin ec2 console
 
@@ -14,10 +14,8 @@ prod: build
 		--rm \
 		--name homepage \
 		-e AWS_REGION=us-east-1 \
-		-e DATABASE_HOST \
-		-e DATABASE_PORT \
-		-e SEARCH_HOST \
-		-e SEARCH_PORT \
+		-e DATABASE_HOST=database.homepage2 \
+		-e SEARCH_HOST=search.homepage2 \
 		-e RACK_ENV=production \
 		-e S3_BUCKET=hiroyuki.sano.ninja \
 		-e S3_PREFIX=zeppelin/ \
