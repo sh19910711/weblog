@@ -1,0 +1,183 @@
+<script src="./dist/amazon-cognito-identity.min.js"></script>
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.483.0.min.js"></script>
+<h1>edit</h1>
+<script>
+function run() {
+    function signIn(authenticationData, callback) {
+      function getUser() {
+        const poolData = {
+          UserPoolId: 'us-east-1_ngme'+'RQd9I',
+          ClientId: '25aec8e'+'om6fb4v9js2pusfmq1v'
+        };
+        const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        const userData = {
+            Username: authenticationData.Username,
+            Pool: userPool
+        };
+        var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+
+        return cognitoUser;
+      }
+
+      const user = getUser();
+      const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
+      user.authenticateUser(authenticationDetails, {
+          onSuccess: function (result) {
+              var accessToken = result.getAccessToken().getJwtToken();
+
+              //POTENTIAL: Region needs to be set if not already set previously elsewhere.
+              AWS.config.region = 'us-east-1';
+
+              AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                  IdentityPoolId: 'us-east-1:094c8'+'067-7acc-4113-a390-ad8c542f6af8', // your identity pool id here
+                  Logins: {
+                      // Change the key below according to the specific region your user pool is in.
+                      'cognito-idp.us-east-1.amazonaws.com/us-east-1_ngmeRQd9I' : result.getIdToken().getJwtToken()
+                  }
+              });
+
+              //refreshes credentials using AWS.CognitoIdentity.getCredentialsForIdentity()
+              AWS.config.credentials.refresh((error) => {
+                  if (error) {
+                       console.error(error);
+                  } else {
+                       // Instantiate aws sdk service objects now that the credentials have been updated.
+                       // example: var s3 = new AWS.S3();
+                       console.log('Successfully logged!');
+                       callback();
+                  }
+              });
+          },
+
+          onFailure: function(err) {
+              console.error(err.message || JSON.stringify(err));
+          },
+
+          newPasswordRequired: function(err) {
+              if (err) console.error(err);
+              user.completeNewPasswordChallenge('O9hAm`G`.dY#>B.++');
+          },
+
+      });
+    }
+
+    function renderSignIn() {
+      function createSignInButton() {
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = '#hello';
+        form.onsubmit = function() { console.log('on signin'); return false };
+        const username = document.createElement('input');
+        username.name = 'username';
+        username.placeholder = 'username';
+        const password = document.createElement('input');
+        password.type = 'password';
+        password.name = 'password';
+        password.placeholder = 'password';
+        const button = document.createElement('button');
+        button.innerText = 'Sign in';
+        button.onclick = function() {
+          const text = document.createElement('text');
+          text.innerText = 'running...';
+          document.body.appendChild(text);
+          signIn({Username: username.value, Password: password.value}, function() {
+            location.hash = 'welcome';
+          })
+        };
+        form.appendChild(username);
+        form.appendChild(password);
+        form.appendChild(button);
+        return form;
+      }
+      document.body.appendChild(createSignInButton());
+    }
+
+    function renderIdentity() {
+      document.body.appendChild((function() {
+        const button = document.createElement('button');
+        button.innerText = 'GetCallerIdentity';
+        button.onclick = function() {
+           const sts = new AWS.STS();
+           sts.getCallerIdentity({}, function(err, data) {
+             if (err) console.error(err);
+             console.log(data);
+           });
+        };
+        return button;
+      })());
+    }
+
+    function renderQuery() {
+      document.body.appendChild((function self() {
+        const div = document.createElement('div');
+        const input = document.createElement('textarea');
+        input.placeholder = 'sql here';
+        const result = document.createElement('pre');
+        const button = document.createElement('button');
+        button.innerText = 'Run Query';
+        button.onclick = function() {
+          const lambda = new AWS.Lambda();
+          const params = {
+            FunctionName: 'homepage-Cognito-9BU351LF6PNT-RubyFunction-7LPKH26K3NNG',
+            InvocationType: 'RequestResponse',
+            LogType: 'None',
+            Payload: JSON.stringify({
+              'type': 'query',
+              'sql': input.value
+            }),
+          };
+          lambda.invoke(params, function(err, res) {
+            if (err) console.error(err);
+            result.innerText = JSON.stringify(JSON.parse(JSON.parse(res.Payload)), null, "\t");
+            document.body.appendChild(self());
+          })
+        };
+
+        div.appendChild(input);
+        div.appendChild(document.createElement('br'));
+        div.appendChild(button);
+        div.appendChild(document.createElement('br'));
+        div.appendChild(result);
+        return div;
+      })());
+    }
+
+    function renderWelcome() {
+      document.body.appendChild((function() {
+        const div = document.createElement('div');
+        div.innerHTML = '';
+        div.innerHTML += '<ul>';
+        div.innerHTML += '<li><a href="#welcome">welcome</a></li>';
+        div.innerHTML += '<li><a href="#query">sql query</a></li>';
+        div.innerHTML += '<li><a href="#logout">logout</a></li>';
+        div.innerHTML += '</ul>';
+        return div;
+      })());
+    }
+
+    function render() {
+      if (!AWS.config.credentials) {
+        renderSignIn();
+        return ;
+      }
+
+      console.log(location.hash);
+      switch (location.hash) {
+        case '#welcome':
+          renderWelcome();
+          break;
+        case '#query':
+          renderQuery();
+          break;
+        default:
+          renderSignIn();
+          break;
+      }
+    }
+
+    window.onhashchange = render;
+    render();
+}
+
+window.onload = run;
+</script>
