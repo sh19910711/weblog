@@ -14,7 +14,7 @@ gem "sass"
 gem "activerecord"
 gem "mysql2"
 gem "aws-sdk-s3"
-gem "elasticsearch", "~> 6.1.0"
+gem "elasticsearch", "~> 7.2.0"
 
 group :development do
   gem "byebug"

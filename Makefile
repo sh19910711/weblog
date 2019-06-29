@@ -1,4 +1,4 @@
-VERSION=0.0.28
+VERSION=0.1.0
 
 .PHONY: image push prod dev spec admin zeppelin ec2 console
 
@@ -29,12 +29,8 @@ dev: build
 	docker run \
 		--rm \
 		--name homepage \
-		-e DATABASE_HOST \
-		-e DATABASE_PORT \
-		-e DATABASE_USERNAME \
-		-e DATABASE_PASSWORD \
-		-e SEARCH_HOST \
-		-e SEARCH_PORT \
+		-e DATABASE_HOST=database.homepage2 \
+		-e SEARCH_HOST=search.homepage2 \
 		-e AWS_REGION=us-east-1 \
 		-e RACK_ENV=development \
 		-e S3_BUCKET=hiroyuki.sano.ninja \

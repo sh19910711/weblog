@@ -11,16 +11,16 @@ module Storage
       @index = 'homepage'
     end
 
-    def search(type, body)
-      client.search(index: 'homepage', type: type, body: body)
+    def search(index, body)
+      client.search(index: index, body: body)
     end
 
-    def index(type, body)
-      client.index(index: 'homepage', type: type, body: body)
+    def index(index, body)
+      client.index(index: index, body: body)
     end
 
-    def delete(type, doc_id)
-      client.delete(index: 'homepage', type: type, id: doc_id)
+    def delete(index, doc_id)
+      client.delete(index: index, id: doc_id)
     end
   end
 end

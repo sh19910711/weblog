@@ -52,7 +52,7 @@ module Homepage
             }
           }
         }
-        res = es.search('note_tags', {'aggs': aggregates_params})
+        res = es.search('homepage_note_tags', {'aggs': aggregates_params})
         res['aggregations']['all_tags']['buckets']
       end
     end
@@ -80,7 +80,7 @@ module Homepage
           tag: params[:key]
         }
       }
-      res = es.search('note_tags', {'query': query_params})
+      res = es.search('homepage_note_tags', {'query': query_params})
       note_ids = res['hits']['hits'].map{|hit| hit['_source']['note_id'] }
 
       @notes = Model::Note.where(note_id: note_ids).order('created_at desc')

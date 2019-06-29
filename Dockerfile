@@ -1,5 +1,6 @@
-FROM ruby:2.5.1-alpine
+FROM ruby:2.6.3-alpine
 
+RUN bundle --version
 RUN mkdir /wrk
 ADD Gemfile /wrk/
 ADD Gemfile.lock /wrk/
@@ -9,7 +10,7 @@ RUN apk update && \
     build-base \
     libffi-dev \
     mysql-dev && \
-  bundle install -j4 --without development
+  /usr/local/bin/bundle install -j4 --without development
 
 ENV RACK_ENV=production
 

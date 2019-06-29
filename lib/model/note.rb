@@ -25,7 +25,7 @@ module Model
 
     def tags
       es = Storage::Elasticsearch.new
-      query_params = {
+      query = {
         match: {
           note_id: note_id
         }
@@ -35,13 +35,18 @@ module Model
           order: 'asc'
         }
       }
-      res = es.search('note_tags', {query: query_params, sort: sort_params})
-      res['hits']['hits'].map {|hit| hit['_source']['tag'] }
+      aggs = {
+        tags: {
+          terms: { field: 'tag' },
+        }
+      }
+      res = es.search('homepage_note_tags', {query: query, sort: sort_params, aggs: aggs})
+      res['aggregations']['tags']['buckets'].map {|b| b['key'] }
     end
 
     def add_tag(tag_name)
       es = Storage::Elasticsearch.new
-      es.index('note_tags', {
+      es.index('homepage_note_tags', {
         note_id: note_id,
         tag: tag_name.strip,
       })
@@ -65,10 +70,10 @@ module Model
           ]
         }
       }
-      res = es.search('note_tags', {query: query_params})
+      res = es.search('homepage_note_tags', {query: query_params})
 
       res['hits']['hits'].each do |hit|
-        es.delete('note_tags', hit['_id'])
+        es.delete('homepage_note_tags', hit['_id'])
       end
     end
 
