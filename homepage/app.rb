@@ -60,7 +60,7 @@ module Homepage
     get '/' do
       q = Model::Note.where(is_public: 't')
       q = q.or(Model::Note.where(is_public: 'f')) if development?
-      @notes = q.order('created_at desc').all
+      @notes = q.order('updated_at desc').all
 
       slim :index
     end

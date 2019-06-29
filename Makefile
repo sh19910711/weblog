@@ -1,4 +1,4 @@
-VERSION=0.0.26
+VERSION=0.0.27
 
 .PHONY: image push prod dev spec admin zeppelin ec2 console
 
@@ -6,7 +6,7 @@ build:
 	docker build -t sh19910711/homepage .
 	docker tag sh19910711/homepage sh19910711/homepage:$(VERSION)
 
-push:
+push: build
 	docker push sh19910711/homepage:$(VERSION)
 
 prod: build
@@ -59,8 +59,10 @@ dev/mysql:
 		-e MYSQL_ROOT_PASSWORD=mysql \
 		mariadb:10.4.1
 
+dev/mysql/dump:
+	mysqldump -h database.homepage2 -uroot -pmysql homepage | gzip - | aws s3 cp - s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz
+
 dev/mysql/restore:
-	# dump: docker exec 1007347ef909 mysqldump -pmysql homepage | gzip - | aws s3 cp - s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz
 	echo 'create database homepage;' | docker exec -i mysql mysql
 	aws s3 cp s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz - | zcat | docker exec -i mysql mysql homepage
 
