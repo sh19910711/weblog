@@ -133,31 +133,38 @@ function run() {
           const itemsRaw = JSON.parse(JSON.parse(res.Payload));
           let items = itemsRaw.slice();
 
-          const filterInput = document.createElement('input');
-          const filterButton = document.createElement('button');
-          filterButton.innerText = 'Filter!!';
-          filterButton.onclick = function() {
-            const s = filterInput.value;
-            items = itemsRaw.filter(x => x.name.match(s));
-            renderList();
-          };
-          div.appendChild(filterInput);
-          div.appendChild(filterButton);
+          div.appendChild((function() {
+            const view = document.createElement('div');
+            const input = document.createElement('input');
+            const button = document.createElement('button');
+            button.innerText = 'Filter!!';
+            button.onclick = function() {
+              const s = input.value;
+              items = itemsRaw.filter(x => x.name.match(s));
+              renderList();
+            };
+            view.appendChild(input);
+            view.appendChild(button);
+            return view;
+          })());
 
-          const ul = document.createElement('div');
-          const allSelectButton = document.createElement('button');
-          allSelectButton.innerText = 'Select All';
-          allSelectButton.onclick = function() {
-            console.log('allSelectButton');
-            for (let el = ul.firstChild; el; el = el.nextSibling) {
-              el.firstChild.checked = !el.firstChild.checked;
+          const ul = document.createElement('ul');
+
+          div.appendChild((function() {
+            const button = document.createElement('button');
+            button.innerText = 'Select All';
+            button.onclick = function() {
+              for (let el = ul.firstChild; el; el = el.nextSibling) {
+                el.firstChild.checked = !el.firstChild.checked;
+              }
             }
-          };
-          div.appendChild(allSelectButton);
+            return button;
+          })());
 
-          div.appendChild(ul);
           function renderList() {
             while (ul.firstChild) ul.removeChild(ul.firstChild);
+
+            const fragment = document.createDocumentFragment();
             items.forEach(function(item) {
               const li = document.createElement('li');
               li.dataset.note_id = item.note_id;
@@ -168,52 +175,139 @@ function run() {
               input.type = 'checkbox';
               li.appendChild(input);
               li.appendChild(label);
-              ul.appendChild(li);
+              fragment.appendChild(li);
             });
+            ul.appendChild(fragment);
           }
-          renderList();
 
-          const tagInput = document.createElement('input');
-          const tagButton = document.createElement('button');
-          tagButton.innerText = 'set tag';
-          tagButton.onclick = function() {
-            const noteIds = [];
-            for (let el = ul.firstChild; el; el = el.nextSibling) {
-              if (el.firstChild.checked) {
-                noteIds.push(el.dataset.note_id);
-              }
-            }
-            const tags = tagInput.value.split(',');
-            const body = generateBody(noteIds, tags);
-            function generateBody(ids, tags) {
+          renderList();
+          div.appendChild(ul);
+
+          div.appendChild((function() {
+            const view = document.createElement('div');
+            const input = document.createElement('input');
+            const button = document.createElement('button');
+            button.innerText = 'set tag';
+            button.onclick = function() {
+              const tags = input.value.split(',');
               const body = [];
-              for (let i = 0; i < ids.length; ++i) {
+              for (let i = 0; i < ul.children.length; ++i) {
+                const el = ul.children[i];
                 for (let j = 0; j < tags.length; ++j) {
                   body.push({
                     index: {
                       _index: "homepage_note_tags",
                       data: {
-                        note_id: ''+ids[i],
-                        tag: ''+tags[j]
+                        note_id: ''+el.dataset.note_id,
+                        name: ''+el.dataset.name,
+                        tag: ''+tags[j],
                       }
                     }
                   });
                 }
               }
-              console.log(body);
-              return body;
-            }
-            sendBulk(body, function(err, res) {
-              if (err) console.error(err);
-              console.log(res);
-            });
-          };
-          div.appendChild(tagInput);
-          div.appendChild(tagButton);
+
+              sendBulk(body, function(err, res) {
+                if (err) console.error(err);
+                const result = document.createElement('pre');
+                result.innerText = JSON.stringify(JSON.parse(res.Payload), null, "\t");
+                view.appendChild(result);
+              });
+            };
+            view.appendChild(input);
+            view.appendChild(button);
+            return view;
+          })());
         });
 
         return div;
       })());
+    }
+
+    function renderTags() {
+      console.log('tags');
+      const view = document.createElement('div');
+      document.body.appendChild(view);
+
+      const params = {
+        type: 'search:search',
+        params: JSON.stringify({
+          index: 'homepage_note_tags',
+          size: 10000
+        })
+      };
+      invoke(JSON.stringify(params), function(err, res) {
+        if (err) console.error(err);
+        const payload = JSON.parse(res.Payload);
+
+        const ul = document.createElement('ul');
+
+        view.appendChild((function() {
+          const button = document.createElement('button');
+          button.innerText = 'Select All';
+          button.onclick = function() {
+            for (let el = ul.firstChild; el; el = el.nextSibling) {
+              el.firstChild.checked = !el.firstChild.checked;
+            }
+          };
+          return button;
+        })());
+
+        view.appendChild((function() {
+          const fragment = document.createDocumentFragment();
+          const hits = payload.hits.hits;
+          for (let i = 0; i < hits.length; ++i) {
+            const id = hits[i]['_id'];
+            const source = hits[i]['_source'];
+            const li = document.createElement('li')
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            const span = document.createElement('span');
+            span.innerText = `${source.tag}: ${source.name} / ${id}`
+            li.appendChild(input);
+            li.appendChild(span);
+            li.dataset.id = id;
+            fragment.appendChild(li);
+          }
+          ul.appendChild(fragment);
+          return ul;
+        })());
+
+        view.appendChild((function() {
+          const view = document.createElement('div');
+          const input = document.createElement('input');
+          input.type = 'checkbox';
+          view.appendChild(input);
+
+          const button = document.createElement('button');
+          button.onclick = function() {
+            if (!input.checked) {
+              alert('please check left box');
+              return;
+            }
+
+            const body = [];
+            for (let el = ul.firstChild; el ; el = el.nextSibling) {
+              body.push({
+                'delete': {
+                  _index: 'homepage_note_tags',
+                  _id: el.dataset.id,
+                }
+              });
+            }
+
+            sendBulk(body, function(err, res) {
+              if (err) console.error(err);
+              const result = document.createElement('pre');
+              result.innerText = JSON.stringify(JSON.parse(res.Payload), null, "\t");
+              view.appendChild(result);
+            });
+          };
+          button.innerText = 'Delete tags # please check left box';
+          view.appendChild(button);
+          return view;
+        })());
+      });
     }
 
     function renderQuery() {
@@ -259,7 +353,7 @@ function run() {
     }
 
     function sendBulk(body, callback) {
-        lambda.invoke(JSON.stringify({
+        invoke(JSON.stringify({
           'type': 'search:bulk',
           'body': JSON.stringify(body)
         }), callback);
@@ -303,7 +397,8 @@ function run() {
         div.innerHTML = '';
         div.innerHTML += '<ul>';
         div.innerHTML += '<li><a href="#welcome">welcome</a></li>';
-        div.innerHTML += '<li><a href="#notes">show all notes</a></li>';
+        div.innerHTML += '<li><a href="#notes">all notes</a></li>';
+        div.innerHTML += '<li><a href="#tags">all tags</a></li>';
         div.innerHTML += '<li><a href="#query">sql query</a></li>';
         div.innerHTML += '<li><a href="#search:bulk">search: bulk</a></li>';
         div.innerHTML += '<li><a href="#logout">logout</a></li>';
@@ -332,6 +427,9 @@ function run() {
           break;
         case '#notes':
           renderNotes();
+          break;
+        case '#tags':
+          renderTags();
           break;
         case '#search:bulk':
           renderSearchBulk();
