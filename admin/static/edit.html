@@ -81,7 +81,7 @@ function run() {
           text.innerText = 'running...';
           document.body.appendChild(text);
           signIn({Username: username.value, Password: password.value}, function() {
-            location.hash = 'welcome';
+            location.hash = 'ping';
           })
         };
         form.appendChild(username);
@@ -107,24 +107,28 @@ function run() {
       })());
     }
 
+    function invoke(payload, callback) {
+      const lambda = new AWS.Lambda();
+      const params = {
+        FunctionName: 'homepage-Cognito-9BU351LF6PNT-RubyFunction-7LPKH26K3NNG',
+        InvocationType: 'RequestResponse',
+        LogType: 'None',
+        Payload: payload,
+      };
+      lambda.invoke(params, callback);
+    }
+
     function renderNotes() {
       document.body.appendChild((function self() {
         const div = document.createElement('div');
         div.innerText = 'loading...';
-        const lambda = new AWS.Lambda();
-        const params = {
-          FunctionName: 'homepage-Cognito-9BU351LF6PNT-RubyFunction-7LPKH26K3NNG',
-          InvocationType: 'RequestResponse',
-          LogType: 'None',
-          Payload: JSON.stringify({
-            'type': 'all'
-          }),
-        };
 
         const result = document.createElement('div');
         div.appendChild(result);
 
-        lambda.invoke(params, function(err, res) {
+        invoke(JSON.stringify({
+            'type': 'all'
+        }), function(err, res) {
           if (err) console.error(err);
           const itemsRaw = JSON.parse(JSON.parse(res.Payload));
           let items = itemsRaw.slice();
@@ -221,21 +225,14 @@ function run() {
         const button = document.createElement('button');
         button.innerText = 'Run Query';
         button.onclick = function() {
-          const lambda = new AWS.Lambda();
-          const params = {
-            FunctionName: 'homepage-Cognito-9BU351LF6PNT-RubyFunction-7LPKH26K3NNG',
-            InvocationType: 'RequestResponse',
-            LogType: 'None',
-            Payload: JSON.stringify({
-              'type': 'query',
-              'sql': input.value
-            }),
-          };
-          lambda.invoke(params, function(err, res) {
+          invoke(JSON.stringify({
+            'type': 'query',
+            'sql': input.value
+          }), function(err, res) {
             if (err) console.error(err);
             result.innerText = JSON.stringify(JSON.parse(JSON.parse(res.Payload)), null, "\t");
             document.body.appendChild(self());
-          })
+          });
         };
 
         div.appendChild(input);
@@ -247,18 +244,25 @@ function run() {
       })());
     }
 
+    function renderPing() {
+      document.body.appendChild((function() {
+        const div = document.createElement('div');
+        div.innerText = 'ping...';
+        invoke(JSON.stringify({
+          'type': 'ping'
+        }, function() {
+          div.innerText += ' => pong!!';
+          location.hash = '#welcome';
+        }));
+        return div;
+      })());
+    }
+
     function sendBulk(body, callback) {
-        const lambda = new AWS.Lambda();
-        const params = {
-          FunctionName: 'homepage-Cognito-9BU351LF6PNT-RubyFunction-7LPKH26K3NNG',
-          InvocationType: 'RequestResponse',
-          LogType: 'None',
-          Payload: JSON.stringify({
-            'type': 'search:bulk',
-            'body': JSON.stringify(body)
-          }),
-        };
-        lambda.invoke(params, callback);
+        lambda.invoke(JSON.stringify({
+          'type': 'search:bulk',
+          'body': JSON.stringify(body)
+        }), callback);
     }
 
     function renderSearchBulk() {
@@ -317,6 +321,9 @@ function run() {
 
       console.log(location.hash);
       switch (location.hash) {
+        case '#ping':
+          renderPing();
+          break;
         case '#welcome':
           renderWelcome();
           break;
