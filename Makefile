@@ -10,9 +10,19 @@ build:
 		docker build -t sh19910711/homepage_database . && \
 		docker tag sh19910711/homepage_database sh19910711/homepage_database:$(VERSION)
 
+	cd docker/search && \
+		docker build -t sh19910711/homepage_search . && \
+		docker tag sh19910711/homepage_search sh19910711/homepage_search:$(VERSION)
+
+	cd docker/commands && \
+		docker build -t sh19910711/homepage_commands . && \
+		docker tag sh19910711/homepage_commands sh19910711/homepage_commands:$(VERSION)
+
 push: build
 	docker push sh19910711/homepage:$(VERSION)
 	docker push sh19910711/homepage_database:$(VERSION)
+	docker push sh19910711/homepage_search:$(VERSION)
+	docker push sh19910711/homepage_commands:$(VERSION)
 
 prod: build
 	docker run \

@@ -201,6 +201,41 @@ Resources:
                 - "logs:PutLogEvents"
               Resource: '*'
 
+    SearchTaskRole:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /
+        AssumeRolePolicyDocument:
+          Statement:
+            - Principal:
+                Service:
+                  - ecs-tasks.amazonaws.com
+              Action: 'sts:AssumeRole'
+              Effect: Allow
+
+    SearchTaskRolePolicy:
+      Type: AWS::IAM::Policy
+      Properties:
+        PolicyName: Full
+        Roles:
+          - !Ref SearchTaskRole
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Resource: "arn:aws:s3:::hiroyuki.sano.ninja"
+              Action:
+                - "s3:List*"
+                - "s3:Get*"
+            - Effect: Allow
+              Resource: "arn:aws:s3:::hiroyuki.sano.ninja/tmp/search/*"
+              Action:
+                - "s3:*"
+            - Effect: Allow
+              Action:
+                - "logs:CreateLogStream"
+                - "logs:PutLogEvents"
+              Resource: '*'
+
     WebTaskDefinition:
         Type: AWS::ECS::TaskDefinition
         Properties:
@@ -252,7 +287,7 @@ Resources:
                     Command:
                       - CMD-SHELL
                       - 'mysql --password=$MYSQL_ROOT_PASSWORD -e "show databases;"'
-                    StartPeriod: 60
+                    StartPeriod: 30
                   PortMappings:
                     - Protocol: tcp
                       ContainerPort: 3306
@@ -290,22 +325,43 @@ Resources:
         Properties:
             Family: search
             ExecutionRoleArn: !Ref TaskRole
-            TaskRoleArn: !Ref TaskRole
+            TaskRoleArn: !Ref SearchTaskRole
             NetworkMode: awsvpc
             ContainerDefinitions:
                 - Name: search
                   Essential: true
-                  Image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+                  Image: !Sub sh19910711/homepage_search:${HomepageVersion}
                   Memory: 1024
                   PortMappings:
                     - Protocol: tcp
                       ContainerPort: 9200
                       HostPort: 9200
+                  HealthCheck:
+                    Command:
+                      - CMD-SHELL
+                      - 'curl http://localhost:9200'
+                    StartPeriod: 30
                   Environment:
                     - Name: discovery.type
                       Value: single-node
                     - Name: ES_JAVA_OPTS
                       Value: "-Xms512m -Xmx512m"
+                  LogConfiguration:
+                    LogDriver: awslogs
+                    Options:
+                        awslogs-group: !Ref AWS::StackName
+                        awslogs-region: !Ref AWS::Region
+                - Name: search_init
+                  Essential: false
+                  Image: !Sub sh19910711/homepage_commands:${HomepageVersion}
+                  Memory: 64
+                  DependsOn:
+                    - ContainerName: search
+                      Condition: HEALTHY
+                  Command:
+                    - bash
+                    - '-c'
+                    - 'sleep 60; aws s3 cp s3://hiroyuki.sano.ninja/tmp/search/init_search.bash - | bash'
                   LogConfiguration:
                     LogDriver: awslogs
                     Options:
