@@ -4,7 +4,7 @@ grant select on homepage.* to homepage@'%';
 
 create table homepage.notes (
   id bigint,
-  note_id varchar(255),
+  note_id varchar(255) not null primary key,
   note_type varchar(255),
   url varchar(255),
   image varchar(255),
