@@ -6,8 +6,13 @@ build:
 	docker build -t sh19910711/homepage .
 	docker tag sh19910711/homepage sh19910711/homepage:$(VERSION)
 
+	cd docker/mysql && \
+		docker build -t sh19910711/homepage_database . && \
+		docker tag sh19910711/homepage_database sh19910711/homepage_database:$(VERSION)
+
 push: build
 	docker push sh19910711/homepage:$(VERSION)
+	docker push sh19910711/homepage_database:$(VERSION)
 
 prod: build
 	docker run \

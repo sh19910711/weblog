@@ -41,6 +41,10 @@ Parameters:
         Description: The ECS service auto scaling role ARN
         Type: String
 
+    HomepageVersion:
+        Type: String
+        Default: 0.1.0
+
 Resources:
     WebService:
         Type: AWS::ECS::Service
@@ -166,10 +170,36 @@ Resources:
               Action:
                 - "s3:GetObject"
 
+    DatabaseTaskRole:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /
+        AssumeRolePolicyDocument:
+          Statement:
+            - Principal:
+                Service:
+                  - ecs-tasks.amazonaws.com
+              Action: 'sts:AssumeRole'
+              Effect: Allow
+
+    DatabaseTaskRolePolicy:
+      Type: AWS::IAM::Policy
+      Properties:
+        PolicyName: Full
+        Roles:
+          - !Ref DatabaseTaskRole
+        PolicyDocument:
+          Statement:
             - Effect: Allow
-              Resource: "*"
+              Resource: "arn:aws:s3:::hiroyuki.sano.ninja/tmp/mysql/*"
               Action:
-                - "cloudwatch:*"
+                - "s3:GetObject"
+                - "s3:ListObject"
+            - Effect: Allow
+              Action:
+                - "logs:CreateLogStream"
+                - "logs:PutLogEvents"
+              Resource: '*'
 
     WebTaskDefinition:
         Type: AWS::ECS::TaskDefinition
@@ -211,13 +241,18 @@ Resources:
         Properties:
             Family: database
             ExecutionRoleArn: !Ref TaskRole
-            TaskRoleArn: !Ref TaskRole
+            TaskRoleArn: !Ref DatabaseTaskRole
             NetworkMode: awsvpc
             ContainerDefinitions:
                 - Name: database
                   Essential: true
-                  Image: mariadb:10.4.1
+                  Image: !Sub sh19910711/homepage_database:${HomepageVersion}
                   Memory: 512
+                  HealthCheck:
+                    Command:
+                      - CMD-SHELL
+                      - 'mysql --password=$MYSQL_ROOT_PASSWORD -e "show databases;"'
+                    StartPeriod: 60
                   PortMappings:
                     - Protocol: tcp
                       ContainerPort: 3306
@@ -225,6 +260,25 @@ Resources:
                   Environment:
                     - Name: MYSQL_ROOT_PASSWORD
                       Value: mysql
+                  LogConfiguration:
+                    LogDriver: awslogs
+                    Options:
+                        awslogs-group: !Ref AWS::StackName
+                        awslogs-region: !Ref AWS::Region
+                - Name: database_init
+                  Essential: false
+                  Image: !Sub sh19910711/homepage_database:${HomepageVersion}
+                  Memory: 512
+                  Environment:
+                    - Name: MYSQL_ROOT_PASSWORD
+                      Value: mysql
+                  DependsOn:
+                    - ContainerName: database
+                      Condition: HEALTHY
+                  Command:
+                    - bash
+                    - '-c'
+                    - 'sleep 60; aws s3 cp s3://hiroyuki.sano.ninja/tmp/mysql/init_mysql.bash - | bash'
                   LogConfiguration:
                     LogDriver: awslogs
                     Options:
