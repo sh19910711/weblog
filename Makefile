@@ -46,7 +46,12 @@ test: dev
 	sleep 5
 	bash -c "until docker-compose exec database mysqladmin ping -pmysql; do echo waiting-database; sleep 5; done"
 	bash -c "until docker-compose exec search curl http://localhost:9200; do echo waiting-search; sleep 5; done"
-	docker-compose run -v $(PWD):/wrk web ash -c "bundle install -j4 --with development && bundle exec rspec -t ~e2e"
+	docker-compose run \
+		-v $(PWD):/wrk \
+		-e DATABASE_USERNAME=root \
+		-e DATABASE_PASSWORD=mysql \
+		web \
+		ash -c "bundle install -j4 --with development && bundle exec rspec -t ~e2e"
 
 spec/all:
 	docker-compose exec web bundle exec rspec
