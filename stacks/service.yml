@@ -270,6 +270,7 @@ Resources:
                     Options:
                         awslogs-group: !Ref AWS::StackName
                         awslogs-region: !Ref AWS::Region
+                        awslogs-stream-prefix: homepage
 
     DatabaseTaskDefinition:
         Type: AWS::ECS::TaskDefinition
@@ -300,6 +301,7 @@ Resources:
                     Options:
                         awslogs-group: !Ref AWS::StackName
                         awslogs-region: !Ref AWS::Region
+                        awslogs-stream-prefix: database
                 - Name: database_init
                   Essential: false
                   Image: !Sub sh19910711/homepage_database:${HomepageVersion}
@@ -319,6 +321,7 @@ Resources:
                     Options:
                         awslogs-group: !Ref AWS::StackName
                         awslogs-region: !Ref AWS::Region
+                        awslogs-stream-prefix: database_init
 
     SearchTaskDefinition:
         Type: AWS::ECS::TaskDefinition
@@ -351,6 +354,7 @@ Resources:
                     Options:
                         awslogs-group: !Ref AWS::StackName
                         awslogs-region: !Ref AWS::Region
+                        awslogs-stream-prefix: search
                 - Name: search_init
                   Essential: false
                   Image: !Sub sh19910711/homepage_commands:${HomepageVersion}
@@ -361,12 +365,13 @@ Resources:
                   Command:
                     - bash
                     - '-c'
-                    - 'sleep 60; aws s3 cp s3://hiroyuki.sano.ninja/tmp/search/init_search.bash - | bash'
+                    - 'sleep 61; aws s3 cp s3://hiroyuki.sano.ninja/tmp/search/init_search.bash - | bash'
                   LogConfiguration:
                     LogDriver: awslogs
                     Options:
                         awslogs-group: !Ref AWS::StackName
                         awslogs-region: !Ref AWS::Region
+                        awslogs-stream-prefix: search_init
 
     CloudWatchLogsGroup:
         Type: AWS::Logs::LogGroup

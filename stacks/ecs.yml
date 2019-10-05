@@ -52,7 +52,6 @@ Resources:
                 Timeout: PT15M
         UpdatePolicy:
             AutoScalingRollingUpdate:
-                MinInstancesInService: 1
                 MaxBatchSize: 1
                 PauseTime: PT15M
                 SuspendProcesses:
@@ -66,6 +65,7 @@ Resources:
     ECSLaunchConfiguration:
         Type: AWS::AutoScaling::LaunchConfiguration
         Properties:
+            SpotPrice: 0.1
             ImageId: ami-02507631a9f7bc956 # amzn2-ami-ecs-hvm-2.0.20190614-x86_64-ebs
             InstanceType: !Ref InstanceType
             KeyName: gateway
