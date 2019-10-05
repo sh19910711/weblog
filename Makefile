@@ -29,7 +29,7 @@ push: build
 	sudo chmod +x /usr/local/bin/docker-compose
 
 dev: build /usr/local/bin/docker-compose
-	VERSION=$(VERSION) docker-compose up -d
+	VERSION=$(VERSION) docker-compose up -d web database search
 
 dev/mysql/dump:
 	mysqldump -h database.homepage2 -uroot -pmysql homepage | gzip - | aws s3 cp - s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz
@@ -43,8 +43,9 @@ dev/search/restore:
 
 .PHONY: spec spec/all
 test: dev
-	bash -c "until docker-compose exec database mysqladmin ping -pmysql; do echo waiting-database; sleep 3; done"
-	bash -c "until docker-compose exec search curl http://localhost:9200; do echo waiting-search; sleep 3; done"
+	sleep 5
+	bash -c "until docker-compose exec database mysqladmin ping -pmysql; do echo waiting-database; sleep 5; done"
+	bash -c "until docker-compose exec search curl http://localhost:9200; do echo waiting-search; sleep 5; done"
 	docker-compose run -v $(PWD):/wrk web ash -c "bundle install -j4 --with development && bundle exec rspec -t ~e2e"
 
 spec/all:
