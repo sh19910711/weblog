@@ -29,7 +29,7 @@ push: build
 	sudo chmod +x /usr/local/bin/docker-compose
 
 dev: build /usr/local/bin/docker-compose
-	VERSION=$(VERSION) docker-compose up
+	VERSION=$(VERSION) docker-compose up -d
 
 dev/mysql/dump:
 	mysqldump -h database.homepage2 -uroot -pmysql homepage | gzip - | aws s3 cp - s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz
@@ -42,11 +42,13 @@ dev/search/restore:
 	aws s3 cp s3://hiroyuki.sano.ninja/tmp/search/init_search.bash - | docker-compose exec -T search bash
 
 .PHONY: spec spec/all
-spec:
-	docker exec -e DATABASE_USERNAME -e DATABASE_PASSWORD homepage bundle exec rspec -t ~e2e
+test: dev
+	bash -c "until docker-compose exec database mysqladmin ping -pmysql; do echo waiting-database; sleep 3; done"
+	bash -c "until docker-compose exec search curl http://localhost:9200; do echo waiting-search; sleep 3; done"
+	docker-compose run -v $(PWD):/wrk web ash -c "bundle install -j4 --with development && bundle exec rspec -t ~e2e"
 
 spec/all:
-	docker exec -e DATABASE_USERNAME -e DATABASE_PASSWORD homepage bundle exec rspec
+	docker-compose exec web bundle exec rspec
 
 setup/amazonlinux:
 	sudo yum install vim tmux docker
