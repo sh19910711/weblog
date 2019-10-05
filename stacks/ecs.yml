@@ -65,8 +65,8 @@ Resources:
     ECSLaunchConfiguration:
         Type: AWS::AutoScaling::LaunchConfiguration
         Properties:
-            SpotPrice: 0.1
-            ImageId: ami-02507631a9f7bc956 # amzn2-ami-ecs-hvm-2.0.20190614-x86_64-ebs
+            SpotPrice: 0.05
+            ImageId: ami-084f07d75acedcefa
             InstanceType: !Ref InstanceType
             KeyName: gateway
             AssociatePublicIpAddress: true
