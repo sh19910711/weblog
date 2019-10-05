@@ -1,0 +1,53 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - '8080:8080'
+    environment:
+      - DATABASE_HOST=database.homepage2
+      - SEARCH_HOST=search.homepage2
+      - AWS_REGION=us-east-1
+      - RACK_ENV=development
+      - S3_BUCKET=hiroyuki.sano.ninja
+      - S3_PREFIX=zeppelin/
+    networks:
+      mesh:
+        aliases:
+          - web
+  
+  database:
+    image: 'mariadb:10.4.1'
+    environment:
+      - MYSQL_ROOT_PASSWORD=mysql
+    networks:
+      mesh:
+        aliases:
+          - database.homepage2
+  
+  search:
+    image: 'sh19910711/homepage_search:${VERSION}'
+    environment:
+      - discovery.type=single-node
+      - indices.fielddata.cache.size=0
+    networks:
+      mesh:
+        aliases:
+          - search.homepage2
+
+  zeppelin:
+    image: apache/zeppelin:0.8.1
+    ports:
+      - 8888:8080
+    environment:
+      - ZEPPELIN_NOTEBOOK_STORAGE=org.apache.zeppelin.notebook.repo.S3NotebookRepo
+      - ZEPPELIN_NOTEBOOK_S3_BUCKET=hiroyuki.sano.ninja
+      - ZEPPELIN_NOTEBOOK_S3_USER=zeppelin
+      - ZEPPELIN_INTERPRETER_OUTPUT_LIMIT=10240000 
+    networks:
+      mesh:
+        aliases:
+          - zeppelin.homepage2
+
+networks:
+  mesh: {}
