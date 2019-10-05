@@ -46,6 +46,7 @@ test: dev
 	sleep 5
 	bash -c "until docker-compose exec database mysqladmin ping -pmysql; do echo waiting-database; sleep 5; done"
 	bash -c "until docker-compose exec search curl http://localhost:9200; do echo waiting-search; sleep 5; done"
+	docker-compose exec database mysql -pmysql -e 'create database if not exists homepage;'
 	docker-compose run \
 		-v $(PWD):/wrk \
 		-e DATABASE_USERNAME=root \
