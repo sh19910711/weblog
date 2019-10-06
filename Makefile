@@ -1,4 +1,4 @@
-VERSION=0.1.0
+VERSION=0.1.1
 
 .PHONY: image push prod dev spec admin zeppelin ec2 console
 
