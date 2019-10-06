@@ -44,8 +44,8 @@ dev/search/restore:
 
 .PHONY: spec spec/all
 test: dev
-	timeout --foreground -s SIGKILL 30 bash -c "until docker-compose exec -T search curl http://localhost:9200; do echo waiting-search; sleep 5; done" || exit 1
-	timeout --foreground -s SIGKILL 30 bash -c "until docker-compose exec -T database mysqladmin ping -pmysql; do echo waiting-database; sleep 5; done" || exit 1
+	timeout --foreground -s SIGKILL 60 bash -c "until docker-compose exec -T search curl http://localhost:9200; do echo waiting-search; sleep 5; done" || exit 1
+	timeout --foreground -s SIGKILL 60 bash -c "until docker-compose exec -T database mysqladmin ping -pmysql; do echo waiting-database; sleep 5; done" || exit 1
 
 	docker-compose exec -T database mysql -pmysql -e 'select count(1) from homepage.notes' || \
 		cat database/sql/setup.sql | docker exec -i $(shell docker-compose ps -q database) mysql -pmysql
