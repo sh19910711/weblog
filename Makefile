@@ -27,6 +27,7 @@ push: build
 /usr/local/bin/docker-compose:
 	sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(shell uname -s)-$(shell uname -m)" -o /usr/local/bin/docker-compose
 	sudo chmod +x /usr/local/bin/docker-compose
+	docker-compose --version
 
 dev: build /usr/local/bin/docker-compose
 	VERSION=$(VERSION) docker-compose up -d web database search
@@ -45,11 +46,9 @@ dev/search/restore:
 test: dev
 	timeout --foreground -s SIGKILL 30 bash -c "until docker-compose exec -T search curl http://localhost:9200; do echo waiting-search; sleep 5; done" || exit 1
 	timeout --foreground -s SIGKILL 30 bash -c "until docker-compose exec -T database mysqladmin ping -pmysql; do echo waiting-database; sleep 5; done" || exit 1
-	timeout --foreground -s SIGKILL 30 bash -c "until echo 'show databases;' | docker-compose exec -T database mysql -pmysql; do echo waiting-database; sleep 5; done" || exit 1
-	exit 3
 
-	echo 'select count(1) from homepage.notes' | docker-compose exec -T database mysql -pmysql || \
-		cat database/sql/setup.sql | docker-compose exec -T database mysql -pmysql
+	docker-compose exec -T database mysql -pmysql -e 'select count(1) from homepage.notes' || \
+		cat database/sql/setup.sql | docker exec -ti $(shell docker-compose ps -q database) mysql -pmysql
 	docker-compose run \
 		-v $(PWD):/wrk \
 		-e DATABASE_USERNAME=root \
