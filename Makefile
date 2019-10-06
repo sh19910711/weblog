@@ -25,7 +25,7 @@ push: build
 	docker push sh19910711/homepage_commands:$(VERSION)
 
 /usr/local/bin/docker-compose:
-	sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+	sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(shell uname -s)-$(shell uname -m)" -o /usr/local/bin/docker-compose
 	sudo chmod +x /usr/local/bin/docker-compose
 
 dev: build /usr/local/bin/docker-compose
@@ -43,10 +43,9 @@ dev/search/restore:
 
 .PHONY: spec spec/all
 test: dev
-	sleep 5
-	bash -c "until docker-compose exec database mysqladmin ping -pmysql; do echo waiting-database; sleep 5; done"
-	bash -c "until docker-compose exec search curl http://localhost:9200; do echo waiting-search; sleep 5; done"
-	docker-compose exec database mysql -pmysql -e 'create database if not exists homepage;'
+	timeout --foreground -s SIGKILL 30 bash -c "until echo wait search; docker-compose exec -T search curl http://localhost:9200; do echo waiting-search; sleep 5; done" || exit 1
+	timeout --foreground -s SIGKILL 30 bash -c "until echo wait database; docker-compose exec -T database mysqladmin ping -pmysql; do echo waiting-database; sleep 5; done" || exit 1
+	cat database/sql/setup.sql | docker-compose exec -T database mysql -pmysql
 	docker-compose run \
 		-v $(PWD):/wrk \
 		-e DATABASE_USERNAME=root \
