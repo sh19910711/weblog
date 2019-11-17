@@ -30,7 +30,7 @@ push: build
 	docker-compose --version
 
 dev: build /usr/local/bin/docker-compose
-	VERSION=$(VERSION) docker-compose up -d web database search
+	VERSION=$(VERSION) docker-compose up -d
 
 dev/mysql/dump:
 	docker-compose exec database mysqldump  -uroot -pmysql homepage | gzip - | aws s3 cp - s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz
