@@ -33,13 +33,15 @@ dev: build /usr/local/bin/docker-compose
 	VERSION=$(VERSION) docker-compose up -d web database search
 
 dev/mysql/dump:
-	mysqldump -h database.homepage2 -uroot -pmysql homepage | gzip - | aws s3 cp - s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz
+	docker-compose exec database mysqldump  -uroot -pmysql homepage | gzip - | aws s3 cp - s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz
 
 dev/mysql/restore:
+	timeout --foreground -s SIGKILL 60 bash -c "until docker-compose exec -T database mysqladmin ping -pmysql; do echo waiting-database; sleep 5; done" || exit 1
+	cat database/sql/setup.sql | docker-compose exec -T database mysql -pmysql
 	aws s3 cp s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz - | zcat | docker-compose exec -T database mysql -pmysql homepage
-	echo "grant select, update on homepage.* to homepage@'%';" | docker-compose exec -T database mysql -pmysql
 
 dev/search/restore:
+	timeout --foreground -s SIGKILL 60 bash -c "until docker-compose exec -T search curl http://localhost:9200; do echo waiting-search; sleep 5; done" || exit 1
 	aws s3 cp s3://hiroyuki.sano.ninja/tmp/search/init_search.bash - | docker-compose exec -T search bash
 
 .PHONY: spec spec/all
