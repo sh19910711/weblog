@@ -11,4 +11,5 @@ stack:
 		--region us-east-1 \
 		--template-file tmp/packaged-template.yml \
 		--stack-name homepage \
+		--parameter-overrides HomepageVersion=0.1.2 \
 		--capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND

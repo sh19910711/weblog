@@ -43,7 +43,6 @@ Parameters:
 
     HomepageVersion:
         Type: String
-        Default: 0.1.1
 
 Resources:
     WebService:

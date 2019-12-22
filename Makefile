@@ -1,4 +1,4 @@
-VERSION=0.1.1
+VERSION=0.1.2
 
 .PHONY: image push prod dev spec admin zeppelin ec2 console
 
@@ -36,12 +36,12 @@ dev/mysql/dump:
 	docker-compose exec database mysqldump  -uroot -pmysql homepage | gzip - | aws s3 cp - s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz
 
 dev/mysql/restore:
-	timeout --foreground -s SIGKILL 60 bash -c "until docker-compose exec -T database mysqladmin ping -pmysql; do echo waiting-database; sleep 5; done" || exit 1
+	timeout --foreground -s SIGKILL 120 bash -c "until docker-compose exec -T database mysqladmin ping -pmysql; do echo waiting-database; sleep 10; done" || exit 1
 	cat database/sql/setup.sql | docker-compose exec -T database mysql -pmysql
 	aws s3 cp s3://hiroyuki.sano.ninja/tmp/mysql/dump.sql.gz - | zcat | docker-compose exec -T database mysql -pmysql homepage
 
 dev/search/restore:
-	timeout --foreground -s SIGKILL 60 bash -c "until docker-compose exec -T search curl http://localhost:9200; do echo waiting-search; sleep 5; done" || exit 1
+	timeout --foreground -s SIGKILL 120 bash -c "until docker-compose exec -T search curl http://localhost:9200; do echo waiting-search; sleep 10; done" || exit 1
 	aws s3 cp s3://hiroyuki.sano.ninja/tmp/search/init_search.bash - | docker-compose exec -T search bash
 
 .PHONY: spec spec/all

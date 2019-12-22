@@ -5,6 +5,9 @@ Parameters:
     Type: String
     Default: homepage
 
+  HomepageVersion:
+    Type: String
+
 Resources:
   VPC:
     Type: AWS::CloudFormation::Stack
@@ -61,6 +64,7 @@ Resources:
         Subnets: !GetAtt VPC.Outputs.Subnets
         SecurityGroup: !GetAtt SecurityGroup.Outputs.ECSHostSecurityGroup
         SecurityGroupAllowInternal: !GetAtt SecurityGroup.Outputs.AllowInternal
+        HomepageVersion: !Ref HomepageVersion
 
   CloudFront:
     Type: AWS::CloudFormation::Stack
@@ -69,11 +73,3 @@ Resources:
       TemplateURL: ./cloudfront.yml
       Parameters:
         FrontURL: !GetAtt LoadBalancer.Outputs.LoadBalancerUrl
-
-  Cognito:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: ./cognito.yml
-      Parameters:
-        Subnets: !GetAtt VPC.Outputs.Subnets
-        SecurityGroup: !GetAtt SecurityGroup.Outputs.AllowInternal
