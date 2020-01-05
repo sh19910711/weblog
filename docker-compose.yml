@@ -41,9 +41,10 @@ services:
           - search.homepage2
 
   zeppelin:
-    image: apache/zeppelin:0.8.1
+    build: ./docker/zeppelin
+    command: ./bin/zeppelin.sh
     ports:
-      - 8888:8080
+      - 8080:8080
     environment:
       - ZEPPELIN_NOTEBOOK_STORAGE=org.apache.zeppelin.notebook.repo.S3NotebookRepo
       - ZEPPELIN_NOTEBOOK_S3_BUCKET=hiroyuki.sano.ninja
