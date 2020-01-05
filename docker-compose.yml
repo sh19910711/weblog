@@ -1,50 +1,34 @@
 version: '3'
 services:
-  web:
-    build: .
+  webapp:
+    build: ./docker/webapp
     ports:
       - '8080:8080'
     environment:
-      - DATABASE_HOST=database.homepage2
-      - SEARCH_HOST=search.homepage2
-      - AWS_REGION=us-east-1
+      - SEARCH_HOST=search.home
       - RACK_ENV=development
-      - S3_BUCKET=hiroyuki.sano.ninja
-      - S3_PREFIX=zeppelin/
     volumes:
-      - .:/wrk
-      - ${HOME}/.aws:/root/.aws
+      - ./docker/webapp:/wrk
     networks:
       mesh:
         aliases:
-          - web
-  
-  database:
-    image: 'mariadb:10.4.1'
-    environment:
-      - MYSQL_ROOT_PASSWORD=mysql
-    networks:
-      mesh:
-        aliases:
-          - database.homepage2
+          - webapp.home
   
   search:
-    image: 'sh19910711/homepage_search:${VERSION}'
+    build: ./docker/search
     environment:
       - discovery.type=single-node
       - indices.fielddata.cache.size=0
-    volumes:
-      - ${HOME}/.aws:/root/.aws
     networks:
       mesh:
         aliases:
-          - search.homepage2
+          - search.home
 
   zeppelin:
     build: ./docker/zeppelin
     command: ./bin/zeppelin.sh
     ports:
-      - 8080:8080
+      - 8888:8080
     environment:
       - ZEPPELIN_NOTEBOOK_STORAGE=org.apache.zeppelin.notebook.repo.S3NotebookRepo
       - ZEPPELIN_NOTEBOOK_S3_BUCKET=hiroyuki.sano.ninja
@@ -53,7 +37,7 @@ services:
     networks:
       mesh:
         aliases:
-          - zeppelin.homepage2
+          - zeppelin.home
 
 networks:
   mesh: {}
