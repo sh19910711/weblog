@@ -10,3 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Build Container Image
+        uses: docker/build-action@v1
+        with:
+          path: ./docker/webapp
