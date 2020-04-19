@@ -1,9 +1,7 @@
 on:
   push:
-    braches:
-      - '*'
-    paths:
-      - 'docker/webapp/**'
+    branches:
+      - 'docker/webapp/*'
 
 jobs:
   build:
