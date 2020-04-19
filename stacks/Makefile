@@ -1,12 +1,13 @@
-stack:
-	mkdir -p tmp
-
+.PHONY: build
+build:
 	aws cloudformation package \
 		--template-file cluster.yml \
 		--s3-bucket cloud9-tmp \
 		--s3-prefix cloudformation/homepage \
 		--output-template-file tmp/packaged-template.yml
 
+.PHONY: deploy
+deploy:
 	aws cloudformation deploy \
 		--region us-east-1 \
 		--template-file tmp/packaged-template.yml \
