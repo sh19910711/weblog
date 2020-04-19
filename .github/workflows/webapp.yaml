@@ -12,5 +12,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build Image
-        run: docker build -t webapp ./docker/webapp
+      - name: cd docker/webapp
+        run: cd docker/webapp
+
+      - name: pwd
+        run: pwd
